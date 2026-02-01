@@ -1,12 +1,22 @@
 // netlify/functions/stripe-webhook.js
 const Stripe = require("stripe");
 
+// fetch helper (Node 18+ has global fetch; fallback for safety)
+async function getFetch() {
+  if (typeof fetch === "function") return fetch;
+  const mod = await import("node-fetch"); // only used if needed
+  return mod.default;
+}
+
 async function postToDiscord(payload) {
   const url = process.env.DISCORD_WEBHOOK_URL;
-  if (!url) return;
+  if (!url) {
+    console.error("Missing DISCORD_WEBHOOK_URL");
+    return;
+  }
 
-  // Node 18+ has fetch built-in (Netlify should be on Node 18)
-  const res = await fetch(url, {
+  const _fetch = await getFetch();
+  const res = await _fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -17,6 +27,7 @@ async function postToDiscord(payload) {
     console.error("Discord webhook failed:", res.status, text);
   }
 }
+
 // ---- Anti-fraud memory (temporary, resets on cold start) ----
 const processedOrders = new Set();
 const recentOrdersByEmail = new Map();
@@ -40,8 +51,8 @@ exports.handler = async (event) => {
     if (!sig) return { statusCode: 400, body: "Missing stripe-signature header" };
 
     const rawBody = event.isBase64Encoded
-    ? Buffer.from(event.body, "base64").toString("utf8")
-    : event.body;
+      ? Buffer.from(event.body, "base64").toString("utf8")
+      : event.body;
 
     let stripeEvent;
     try {
@@ -51,56 +62,42 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: `Webhook signature verification failed: ${e.message}` };
     }
 
-    // We only care about confirmed paid checkouts
+    // Only handle confirmed paid checkouts
     if (stripeEvent.type === "checkout.session.completed") {
       const eventSession = stripeEvent.data.object;
 
-      // ✅ Pull the full session from Stripe (most reliable for metadata)
-      const session = await stripe.checkout.sessions.retrieve(eventSession.id);
+      // Expand payment_intent so we can pull metadata from there too if needed
+      const session = await stripe.checkout.sessions.retrieve(eventSession.id, {
+        expand: ["payment_intent"],
+      });
 
-      const md = session.metadata || {};
       const email = session.customer_details?.email || "UNKNOWN";
 
-      // ---- Velocity check (same email spamming orders) ----
+      // ---- Velocity check ----
       const now = Date.now();
       const lastOrderTime = recentOrdersByEmail.get(email);
-
-      let isRapidRepeat = false;
-      if (lastOrderTime && now - lastOrderTime < 2 * 60 * 1000) {
-        isRapidRepeat = true;
-        console.warn("⚠️ Rapid repeat order:", email);
-      }
-
+      const isRapidRepeat = !!(lastOrderTime && now - lastOrderTime < 2 * 60 * 1000);
       recentOrdersByEmail.set(email, now);
 
       // ---- Burner email detection ----
-      const blockedDomains = [
-        "tempmail",
-        "10minutemail",
-        "mailinator",
-        "guerrillamail",
-        "yopmail"
-      ];
-
+      const blockedDomains = ["tempmail", "10minutemail", "mailinator", "guerrillamail", "yopmail"];
       const isBurnerEmail =
         email !== "UNKNOWN" &&
-        blockedDomains.some(d => email.toLowerCase().includes(d));
+        blockedDomains.some((d) => email.toLowerCase().includes(d));
 
-      // ---- Fraud flags (NOW safe) ----
       const fraudFlags = [];
       if (isBurnerEmail) fraudFlags.push("Burner Email");
       if (isRapidRepeat) fraudFlags.push("Rapid Repeat Order");
 
-      const orderId = md.order_id || session.client_reference_id || "UNKNOWN";
-      const discord = md.discord || "UNKNOWN";
-      const platform = md.platform || "UNKNOWN";
-      const ign = md.ign || "UNKNOWN";
-      const region = md.region || "UNKNOWN";
-      const pkg = md.package || "UNKNOWN";
-      const notes = (md.notes || "").trim();
-      
-      recentOrdersByEmail.set(email, now);
+      // ✅ Merge metadata from session + payment intent (session wins)
+      const mdSession = session.metadata || {};
+      const mdPI = session.payment_intent?.metadata || {};
+      const md = { ...mdPI, ...mdSession };
 
+      console.log("Stripe session id:", session.id);
+      console.log("Merged metadata:", md);
+
+      const orderId = md.order_id || session.client_reference_id || "UNKNOWN";
 
       // ---- Duplicate order protection ----
       if (processedOrders.has(orderId)) {
@@ -108,7 +105,6 @@ exports.handler = async (event) => {
         return { statusCode: 200, body: "duplicate ignored" };
       }
       processedOrders.add(orderId);
-
 
       const addons = [];
       if (md.addon_priority === "true") addons.push("Priority");
@@ -125,29 +121,33 @@ exports.handler = async (event) => {
           {
             title: "✅ New Paid Order",
             description: `**Order ID:** ${orderId}`,
-            color: fraudFlags.length ? 0xF1C40F : 0x2ECC71,
+            color: fraudFlags.length ? 0xf1c40f : 0x2ecc71,
             fields: [
-              { name: "Discord", value: discord, inline: true },
-              { name: "Platform", value: platform, inline: true },
-              { name: "Region", value: region, inline: true },
-              { name: "In-game", value: ign, inline: false },
-              { name: "Package", value: pkg, inline: false },
-              { name: "Add-ons", value: addons.length ? addons.join(", ") : "None", inline: false },
-              { name: "Notes", value: notes ? notes : "None", inline: false },
+              { name: "Game", value: md.game || "UNKNOWN", inline: true },
               { name: "Paid", value: `$${paid.toFixed(2)}`, inline: true },
+              { name: "Email", value: email, inline: false },
+
+              { name: "Discord", value: md.discord || "UNKNOWN", inline: true },
+              { name: "Platform", value: md.platform || "UNKNOWN", inline: true },
+              { name: "Region", value: md.region || "UNKNOWN", inline: true },
+
+              { name: "In-game", value: md.ign || "UNKNOWN", inline: false },
+              { name: "Rank From", value: md.rank_from || "N/A", inline: true },
+              { name: "Rank To", value: md.rank_to || "N/A", inline: true },
+
+              { name: "Package", value: md.package || "UNKNOWN", inline: false },
+              { name: "Add-ons", value: addons.length ? addons.join(", ") : "None", inline: false },
+              { name: "Notes", value: (md.notes || "").trim() || "None", inline: false },
+
               { name: "Stripe Session", value: session.id, inline: false },
-              
               {
                 name: "Stripe Dashboard",
-                value: `https://dashboard.stripe.com/payments/${session.payment_intent}`,
-                inline: false
+                value: session.payment_intent
+                  ? `https://dashboard.stripe.com/payments/${session.payment_intent.id || session.payment_intent}`
+                  : "N/A",
+                inline: false,
               },
-              {
-                name: "Fraud Flags",
-                value: fraudFlags.length ? fraudFlags.join(", ") : "None",
-                inline: false
-              },
-
+              { name: "Fraud Flags", value: fraudFlags.length ? fraudFlags.join(", ") : "None", inline: false },
             ],
           },
         ],

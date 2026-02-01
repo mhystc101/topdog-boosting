@@ -1,0 +1,80 @@
+/* /assets/topdog.css */
+:root{
+  --bg: #020617;           /* slate-950 */
+  --panel: rgba(15,23,42,.6);
+  --border: rgba(30,41,59,1);
+  --text: #e2e8f0;
+  --muted: rgba(148,163,184,1);
+
+  --accent: #6366f1;       /* indigo-500 */
+  --accent2: #38bdf8;      /* sky-400 */
+
+  --glow1: rgba(99,102,241,.20);
+  --glow2: rgba(56,189,248,.10);
+}
+
+body{
+  background: var(--bg);
+  color: var(--text);
+}
+
+.td-shell{
+  position: relative;
+  width: 100%;
+  padding: 2.5rem 1.5rem;
+}
+
+@media (min-width: 1024px){
+  .td-shell{ padding-left: 4rem; padding-right: 4rem; }
+}
+@media (min-width: 1280px){
+  .td-shell{ padding-left: 6rem; padding-right: 6rem; }
+}
+
+.td-container{
+  margin: 0 auto;
+  max-width: 1100px;
+}
+
+.td-panel{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
+.td-glow{
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+.td-glow::before{
+  content:"";
+  position: absolute;
+  top: -10rem;
+  left: 50%;
+  width: 520px;
+  height: 520px;
+  transform: translateX(-50%);
+  border-radius: 9999px;
+  background: var(--glow1);
+  filter: blur(60px);
+}
+.td-glow::after{
+  content:"";
+  position: absolute;
+  bottom: -10rem;
+  right: 0;
+  width: 520px;
+  height: 520px;
+  border-radius: 9999px;
+  background: var(--glow2);
+  filter: blur(60px);
+}
+
+/* Wider containers for pages like the homepage */
+.td-container-wide{
+  margin: 0 auto;
+  max-width: 1600px;
+}

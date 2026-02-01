@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TopDog Orders • Rocket League</title>
+    <link rel="stylesheet" href="/assets/topdog.css" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="min-h-screen bg-slate-950 text-slate-100">
+    <!-- Background glow -->
+    <div class="pointer-events-none fixed inset-0 overflow-hidden">
+      <div class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-indigo-600/20 blur-3xl"></div>
+      <div class="absolute -bottom-40 right-0 h-[520px] w-[520px] rounded-full bg-sky-500/10 blur-3xl"></div>
+    </div>
+
+    <div class="relative w-full px-6 lg:px-16 xl:px-24 py-10">
+      <div class="mx-auto max-w-[1100px]">
+        <!-- Header -->
+        <header class="mb-8">
+          <div id="banner" class="hidden mb-6 rounded-2xl border px-4 py-3"></div>
+
+          <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <div class="flex items-center gap-2 text-xs text-slate-400">
+                <a href="/" class="hover:text-slate-200 underline underline-offset-4">Home</a>
+                <span>•</span>
+                <span>Checkout</span>
+              </div>
+
+              <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-2">
+                TopDog Boosting <span class="text-indigo-400">Rocket League</span>
+              </h1>
+
+              <p class="text-slate-300 mt-2 max-w-2xl">
+                Choose your current rank and goal rank. Payment is handled securely by Stripe.
+              </p>
+            </div>
+
+            <div class="flex items-center gap-3">
+            <!-- Discord icon -->
+            <a
+              href="https://discord.gg/rF5d89mQRq"
+              target="_blank"
+              rel="noopener"
+              class="group flex h-10 w-10 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/60 hover:border-indigo-500 transition"
+              aria-label="Join our Discord"
+              title="Join our Discord"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 127.14 96.36"
+                class="h-5 w-5 fill-slate-300 group-hover:fill-indigo-400 transition"
+              >
+                <path
+                  d="M107.7 8.07A105.15 105.15 0 0081.47.8a72.06 72.06 0 00-3.36 6.83
+                  97.68 97.68 0 00-29.06 0A72.37 72.37 0 0045.7.8
+                  105.89 105.89 0 0019.45 8.09C2.8 32.65-1.71 56.6.54 80.21
+                  a105.73 105.73 0 0032.17 16.15 77.7 77.7 0 006.89-11.11
+                  68.42 68.42 0 01-10.85-5.18c.91-.66 1.8-1.34 2.66-2.06
+                  20.86 9.8 43.63 9.8 64.29 0 .87.72 1.76 1.4 2.66 2.06
+                  a68.68 68.68 0 01-10.87 5.19 77 77 0 006.89 11.1
+                  105.25 105.25 0 0032.19-16.14c2.64-27.56-4.51-51.48-18.94-72.15zM42.45 65.69c-6.18 0-11.29-5.64-11.29-12.59
+                  0-6.95 4.99-12.6 11.29-12.6s11.35 5.65 11.29 12.6
+                  c0 6.95-5 12.59-11.29 12.59zm42.24 0c-6.18 0-11.29-5.64-11.29-12.59
+                  0-6.95 4.99-12.6 11.29-12.6s11.35 5.65 11.29 12.6
+                  c0 6.95-5 12.59-11.29 12.59z"
+                />
+              </svg>
+            </a>
+
+            <span class="inline-flex items-center gap-2 rounded-full border border-emerald-700/50 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-200">
+              <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+              Live Checkout
+            </span>
+
+            <span class="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/60 px-3 py-1 text-xs text-slate-300">
+              Secure • Stripe
+            </span>
+          </div>
+
+          </div>
+        </header>
+
+        <!-- Main content -->
+        <div class="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
+          <!-- Form -->
+          <main class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-lg">
+            <form id="orderForm" class="space-y-5">
+              <!-- Discord -->
+              <div>
+                <label class="block text-sm font-semibold mb-2">Discord username</label>
+                <input
+                  id="discord"
+                  required
+                  placeholder="ex: matthew"
+                  class="w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <p class="text-xs text-slate-400 mt-2">
+                  Make sure this is the name you want support to contact.
+                </p>
+              </div>
+
+              <!-- Platform -->
+              <div>
+                <label class="block text-sm font-semibold mb-2">Platform</label>
+                <div class="relative">
+                <select
+                  id="platform"
+                  required
+                  class="w-full appearance-none rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 pr-10 text-slate-100 outline-none transition
+                        hover:border-slate-600
+                        focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="" disabled selected>Select platform</option>
+                  <option value="PC">PC</option>
+                  <option value="PlayStation">PlayStation</option>
+                  <option value="Xbox">Xbox</option>
+                  <option value="Other">Other</option>
+                </select>
+
+                <!-- Custom arrow -->
+                <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
+                  ▼
+                </div>
+              </div>
+
+              </div>
+
+              <!-- In-game name -->
+              <div>
+                <label class="block text-sm font-semibold mb-2">Epic / IGN</label>
+                <input
+                  id="ign"
+                  required
+                  placeholder="ex: YourEpicName"
+                  class="w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <!-- Region -->
+              <div>
+                <label class="block text-sm font-semibold mb-2">Region</label>
+                <select
+                  id="region"
+                  required
+                  class="w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="" disabled selected>Select region</option>
+                  <option value="NA">NA</option>
+                  <option value="EU">EU</option>
+                  <option value="ASIA">ASIA</option>
+                  <option value="OCE">OCE</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <!-- Notes -->
+              <div>
+                <label class="block text-sm font-semibold mb-2">Extra notes (optional)</label>
+                <textarea
+                  id="notes"
+                  rows="3"
+                  placeholder="ex: Only queue 2v2, avoid aerial heavy style, etc."
+                  class="w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                ></textarea>
+              </div>
+
+              <!-- Rank Builder -->
+              <div class="grid gap-4 md:grid-cols-2">
+                <!-- Current -->
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
+                  <div class="flex items-center gap-4">
+                    <div class="h-28 w-28 shrink-0 rounded-2xl border border-slate-800 bg-slate-950 flex items-center justify-center">
+                      <img
+                        id="rankFromImg"
+                        src="/assets/ranks/placeholder.png"
+                        alt="Current rank icon"
+                        class="h-24 w-24 object-contain transition-opacity duration-300"
+                      />
+                    </div>
+                    <div class="flex-1">
+                      <label class="block text-sm font-semibold mb-2">Current rank</label>
+                      <div class="relative">
+                      <select
+                        id="rankFrom"
+                        required
+                        class="w-full appearance-none rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 pr-10
+                              text-base font-semibold tracking-wide text-slate-100
+                              outline-none transition
+                              hover:border-slate-600
+                              focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      >
+                        <option value="" disabled selected>Select current rank</option>
+                      </select>
+
+                      <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                        ▼
+                      </div>
+                    </div>
+
+                    </div>
+                  </div>
+
+                  <div class="mt-4">
+                    <label class="block text-sm font-semibold mb-2">Current division points</label>
+                    <input
+                      id="divisionPoints"
+                      type="number"
+                      inputmode="numeric"
+                      min="0"
+                      max="9999"
+                      step="1"
+                      placeholder="optional"
+                      class="w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 text-base font-semibold tracking-wide text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                    <p class="text-xs text-slate-400 mt-2">If you’re unsure, leave it blank.</p>
+                  </div>
+                </div>
+
+                <!-- Desired -->
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
+                  <div class="flex items-center gap-4">
+                    <div class="h-28 w-28 shrink-0 rounded-2xl border border-slate-800 bg-slate-950 flex items-center justify-center">
+                      <img
+                        id="rankToImg"
+                        src="/assets/ranks/placeholder.png"
+                        alt="Desired rank icon"
+                        class="h-24 w-24 object-contain transition-opacity duration-300"
+                      />
+                    </div>
+                    <div class="flex-1">
+                      <label class="block text-sm font-semibold mb-2">Desired rank</label>
+                      <select
+                        id="rankTo"
+                        required
+                        class="w-full appearance-none rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 text-base font-semibold tracking-wide text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      >
+                        <option value="" disabled selected>Select desired rank</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
+                    <p class="text-sm font-semibold">Tip</p>
+                    <p class="text-xs text-slate-400 mt-1">Pick a goal rank higher than your current rank.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Add-ons -->
+              <div class="space-y-3">
+                <p class="text-sm font-semibold">Add-ons</p>
+
+                <label class="flex items-center gap-3 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3">
+                  <input id="addonPriority" type="checkbox" class="h-5 w-5" />
+                  <div>
+                    <p class="font-medium">Priority (+20%)</p>
+                    <p class="text-xs text-slate-400">Moved to top of the queue.</p>
+                  </div>
+                </label>
+
+                <label class="flex items-center gap-3 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3">
+                  <input id="addonLowRR" type="checkbox" class="h-5 w-5" />
+                  <div>
+                    <p class="font-medium">Low RR Gain (+50%)</p>
+                    <p class="text-xs text-slate-400">If account gets low gain per match.</p>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Price preview (ONLY ONE totalPreview id) -->
+              <div class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 space-y-2">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-semibold">Estimated total</p>
+                    <p class="text-xs text-slate-400">Final total is calculated securely on checkout.</p>
+                  </div>
+                  <p id="totalPreview" class="text-xl font-bold">$0.00</p>
+                </div>
+
+                <input type="hidden" id="package" />
+                <p id="packageSummary" class="text-sm text-slate-300"></p>
+              </div>
+
+              <button
+                id="payBtn"
+                type="submit"
+                class="w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-3 font-semibold"
+              >
+                Continue to Secure Checkout
+              </button>
+
+              <p id="status" class="text-sm text-slate-300"></p>
+            </form>
+          </main>
+
+          <!-- Side trust -->
+          <aside class="space-y-6">
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+              <p class="text-sm font-semibold">Security & Privacy</p>
+              <ul class="mt-4 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-3"><span class="mt-2 h-2 w-2 rounded-full bg-indigo-400"></span>Secure VPN connection</li>
+                <li class="flex gap-3"><span class="mt-2 h-2 w-2 rounded-full bg-indigo-400"></span>Appear offline</li>
+                <li class="flex gap-3"><span class="mt-2 h-2 w-2 rounded-full bg-indigo-400"></span>Boosters never talk to friends</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+
+        <footer class="mt-10 text-xs text-slate-500">
+          <div class="rounded-2xl border border-slate-800 bg-slate-900/30 p-5">
+            <div class="mt-5 pt-5 border-t border-slate-800 text-slate-500 flex flex-col md:flex-row gap-2 md:items-center md:justify-between">
+              <p>Payments are processed by Stripe (test mode while testing).</p>
+              <a href="/" class="hover:text-slate-300 underline underline-offset-4">Back to Home</a>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

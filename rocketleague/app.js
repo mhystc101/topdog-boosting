@@ -323,6 +323,28 @@ function init() {
     }
   });
 }
+const res = await fetch("/api/create-checkout", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    quote: true,
+    game: "rivals",
+    discord: "temp",
+    platform: "PC",
+    ign: "temp",
+    region: "NA",
+    package: `rivals:${rankFrom}->${rankTo}`,
+    rankFrom,
+    rankTo,
+    divisionPoints: divisionPoints || null,
+    addons: { priority, specificHero, lowRR },
+    heroName: heroName || "",
+    notes: "",
+  }),
+});
+
+const data = await res.json();
+totalPreview.textContent = `$${data.amount}`;
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", init);

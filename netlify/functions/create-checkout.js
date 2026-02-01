@@ -17,8 +17,8 @@ const rivalsIdx = (r) => RIVALS_RANKS.indexOf(r);
 // Rivals Pricing curve
 const BASE_PRICE = 12.49;
 const STEP_ADD_SLOW = 3.75;
-const STEP_ADD_FAST = 14.75;
-const FAST_STEP_START_MULT = 2.0;
+const STEP_ADD_FAST = 12.75;
+const FAST_STEP_START_MULT = 1.65;
 const FAST_GROWTH = 1.24;
 
 const OOA_MIN = 1000;
@@ -163,82 +163,115 @@ exports.handler = async (event) => {
       package: pkg,
       rankFrom,
       rankTo,
-      divisionPoints = null, // rivals may still use it; RL ignores it
+      divisionPoints = null,
       addons = {},
       heroName = "",
+      quote = false,
     } = body;
 
-    if (!discord || !platform || !ign || !region) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing required fields." }) };
+    const isQuote = quote === true;
+
+    // Only require customer fields for REAL checkout
+    if (!isQuote && (!discord || !platform || !ign || !region)) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Missing required fields." }),
+      };
     }
+
+
+    
 
     let amountCents = 0;
     let productName = "";
     let productDesc = "";
     let successPath = "";
-
+   
     // ===================== GAME SWITCH =====================
     switch (game) {
       case "rivals": {
-        const i = rivalsIdx(rankFrom);
-        const j = rivalsIdx(rankTo);
-        if (i < 0 || j < 0 || j <= i) {
-          return { statusCode: 400, body: JSON.stringify({ error: "Invalid rank selection." }) };
-        }
-
-        const expectedPkg = `rivals:${rankFrom}->${rankTo}`;
-        if (pkg !== expectedPkg) {
-          return { statusCode: 400, body: JSON.stringify({ error: "Invalid package." }) };
-        }
-
-        if (addons.specificHero && !String(heroName || "").trim()) {
-          return { statusCode: 400, body: JSON.stringify({ error: "Hero name required." }) };
-        }
-
-        const base = calcBasePrice(rankFrom, rankTo);
-        const total = base * addonMultiplier(addons);
-        amountCents = Math.round(total * 100);
-
-        productName = "TopDog Rivals Boost";
-        productDesc = `${rankFrom} → ${rankTo}`;
-        successPath = "/rivals/";
-        break;
+      const i = rivalsIdx(rankFrom);
+      const j = rivalsIdx(rankTo);
+      if (i < 0 || j < 0 || j <= i) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Invalid rank selection." }) };
       }
+
+      const expectedPkg = `rivals:${rankFrom}->${rankTo}`;
+      if (pkg !== expectedPkg) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Invalid package." }) };
+      }
+
+      if (addons.specificHero && !String(heroName || "").trim()) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Hero name required." }) };
+      }
+
+      const base = calcBasePrice(rankFrom, rankTo);
+      const total = base * addonMultiplier(addons);
+      amountCents = Math.round(total * 100);
+
+      productName = "TopDog Rivals Boost";
+      productDesc = `${rankFrom} → ${rankTo}`;
+      successPath = "/rivals/";
+
+      if (isQuote) {
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            amountCents,
+            amount: (amountCents / 100).toFixed(2),
+            productName,
+            productDesc,
+          }),
+        };
+      }
+
+      break;
+    }
+
 
       case "rocketleague": {
-        // ---- RL validation ----
-        if (!rankFrom || !rankTo) {
-          return { statusCode: 400, body: JSON.stringify({ error: "Missing rank selection." }) };
-        }
-
-        const i = rlIdx(rankFrom);
-        const j = rlIdx(rankTo);
-        if (i < 0 || j < 0) {
-          return { statusCode: 400, body: JSON.stringify({ error: "Invalid Rocket League rank." }) };
-        }
-        if (j <= i) {
-          return { statusCode: 400, body: JSON.stringify({ error: "Invalid rank direction." }) };
-        }
-
-        // Validate package string matches ranks (prevents spoof)
-        const expectedPkg = `rocketleague:${rankFrom}->${rankTo}`;
-        if (pkg !== expectedPkg) {
-          return { statusCode: 400, body: JSON.stringify({ error: "Invalid Rocket League package." }) };
-        }
-
-        const base = calcRLBasePrice(rankFrom, rankTo);
-        if (base <= 0) {
-          return { statusCode: 400, body: JSON.stringify({ error: "Invalid Rocket League price." }) };
-        }
-
-        const total = base * addonMultiplierRL(addons);
-        amountCents = Math.round(total * 100);
-
-        productName = "TopDog Rocket League Boost";
-        productDesc = `${rankFrom} → ${rankTo}`;
-        successPath = "/rocketleague/";
-        break;
+      if (!rankFrom || !rankTo) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Missing rank selection." }) };
       }
+
+      const i = rlIdx(rankFrom);
+      const j = rlIdx(rankTo);
+      if (i < 0 || j < 0 || j <= i) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Invalid Rocket League rank direction." }) };
+      }
+
+      const expectedPkg = `rocketleague:${rankFrom}->${rankTo}`;
+      if (pkg !== expectedPkg) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Invalid Rocket League package." }) };
+      }
+
+      const base = calcRLBasePrice(rankFrom, rankTo);
+      if (base <= 0) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Invalid Rocket League price." }) };
+      }
+
+      const total = base * addonMultiplierRL(addons);
+      amountCents = Math.round(total * 100);
+
+      productName = "TopDog Rocket League Boost";
+      productDesc = `${rankFrom} → ${rankTo}`;
+      successPath = "/rocketleague/";
+
+      if (isQuote) {
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            amountCents,
+            amount: (amountCents / 100).toFixed(2),
+            productName,
+            productDesc,
+          }),
+        };
+      }
+
+      break;
+    }
+
 
       default:
         return { statusCode: 400, body: JSON.stringify({ error: "Invalid game." }) };

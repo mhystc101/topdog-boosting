@@ -1,6 +1,5 @@
 // /rivals/app.js
 
-
 // ================= Banner (success / canceled) =================
 function showBanner() {
   const params = new URLSearchParams(window.location.search);
@@ -44,19 +43,14 @@ const SINGLE_RANKS = ["Eternity", "OOA"];
 function buildRanks() {
   const out = [];
   for (const tier of DIVISION_TIERS) {
-    out.push(`${tier} 3`);
-    out.push(`${tier} 2`);
-    out.push(`${tier} 1`);
+    out.push(`${tier} 3`, `${tier} 2`, `${tier} 1`);
   }
   for (const r of SINGLE_RANKS) out.push(r);
   return out;
 }
 
 const RANKS = buildRanks();
-
-function idx(rank) {
-  return RANKS.indexOf(rank);
-}
+const idx = (rank) => RANKS.indexOf(rank);
 
 // Only allow rank-ups
 function stepsUp(fromRank, toRank) {
@@ -74,86 +68,6 @@ function buildPackageLabel(fromRank, toRank) {
   return `${fromRank} → ${toRank}`;
 }
 
-// ================= Pricing (PREVIEW ONLY) =================
-// Base starts here
-const BASE_PRICE = 6;
-
-// Slow linear step cost up to mid Diamond
-const STEP_ADD_SLOW = 4.3; // slow markup per step until mid Diamond
-
-// Heavy ramp AFTER mid Diamond (geometric growth per step)
-const STEP_ADD_FAST = 12.13;       // starting “per step” add after threshold
-const FAST_STEP_START_MULT = 1.8; // first post-threshold step multiplier
-const FAST_GROWTH = 1.23;       // growth factor per step (raise to ramp harder)
-
-// OOA target range
-const OOA_MIN = 1000;
-const OOA_MAX = 2000;
-
-// Define "mid Diamond" threshold (Diamond 2)
-const MID_DIA_INDEX = idx("Diamond 2");
-
-// Keep these for your tier logic
-const GM_START_INDEX = idx("Grandmaster 3");
-const ETERNITY_INDEX = idx("Eternity");
-
-function clamp(n, lo, hi) {
-  return Math.max(lo, Math.min(hi, n));
-}
-
-// Geometric series sum: base*startMult*(growth^n - 1)/(growth - 1)
-function sumExponentialSteps(base, nSteps, startMult, growth) {
-  if (nSteps <= 0) return 0;
-  if (growth === 1) return base * startMult * nSteps;
-  return base * startMult * (Math.pow(growth, nSteps) - 1) / (growth - 1);
-}
-
-// OOA: expensive, capped 1k–2k
-function calcOOAPrice(fromRank) {
-  const fromIndex = idx(fromRank);
-  if (fromIndex < 0 || ETERNITY_INDEX < 0) return OOA_MIN;
-
-  const stepsToEternity = Math.max(0, ETERNITY_INDEX - fromIndex);
-  const price = OOA_MIN + stepsToEternity * 25; // tune slope
-  return clamp(price, OOA_MIN, OOA_MAX);
-}
-
-function calcBasePrice(fromRank, toRank) {
-  const i = idx(fromRank);
-  const j = idx(toRank);
-  if (i < 0 || j < 0) return 0;
-
-  const steps = j - i;
-  if (steps <= 0) return 0;
-
-  // OOA override
-  if (toRank === "OOA") return calcOOAPrice(fromRank);
-
-  // If threshold missing (typo or renamed ranks), fallback to simple linear
-  if (MID_DIA_INDEX < 0) {
-    return BASE_PRICE + steps * STEP_ADD_SLOW;
-  }
-
-  // -------- Case 1: Entire boost is <= mid Diamond (slow linear) --------
-  if (j <= MID_DIA_INDEX) {
-    return BASE_PRICE + steps * STEP_ADD_SLOW;
-  }
-
-  // -------- Case 2: Crosses past mid Diamond (slow then heavy ramp) --------
-  // Slow part: from current -> mid Diamond
-  const slowSteps = Math.max(0, MID_DIA_INDEX - i);
-  const slowCost = BASE_PRICE + slowSteps * STEP_ADD_SLOW;
-
-  // Heavy part: steps AFTER mid Diamond
-  const postSteps = j - Math.max(i, MID_DIA_INDEX);
-
-  // Post-threshold ramp: geometric add-ons stacked onto slowCost
-  // This makes costs jump noticeably after mid Diamond.
-  const rampCost = sumExponentialSteps(STEP_ADD_FAST, postSteps, FAST_STEP_START_MULT, FAST_GROWTH);
-
-  return slowCost + rampCost;
-}
-
 // ================= Add-ons / UI helpers =================
 function setHeroVisibility() {
   const wrap = document.getElementById("heroWrap");
@@ -161,12 +75,12 @@ function setHeroVisibility() {
   if (wrap) wrap.classList.toggle("hidden", !heroChecked);
 }
 
-function getAddOnMultiplier() {
-  let multiplier = 1;
-  if (document.getElementById("addonPriority")?.checked) multiplier += 0.2;
-  if (document.getElementById("addonHero")?.checked) multiplier += 0.2;
-  if (document.getElementById("addonLowRR")?.checked) multiplier += 0.5;
-  return multiplier;
+function getAddOns() {
+  return {
+    priority: !!document.getElementById("addonPriority")?.checked,
+    specificHero: !!document.getElementById("addonHero")?.checked,
+    lowRR: !!document.getElementById("addonLowRR")?.checked,
+  };
 }
 
 // ================= Rank dropdown populate =================
@@ -193,11 +107,9 @@ function populateRankToFiltered() {
 
   const fromRank = from.value;
   const fromIndex = idx(fromRank);
-
   const prevTo = to.value;
 
   to.innerHTML = `<option value="" disabled selected>Select desired rank</option>`;
-
   if (!fromRank || fromIndex < 0) return;
 
   for (let j = fromIndex + 1; j < RANKS.length; j++) {
@@ -217,14 +129,14 @@ function populateRankToFiltered() {
 // ================= Rank icons (main tier only) =================
 function getMainTier(rank) {
   if (!rank) return "placeholder";
-  return rank.split(" ")[0].toLowerCase(); // ignores 1/2/3
+  // main tier only, ignores 1/2/3
+  return rank.split(" ")[0].toLowerCase();
 }
 
 function swapImage(imgEl, tier) {
   if (!imgEl) return;
 
   imgEl.classList.add("opacity-0");
-
   setTimeout(() => {
     imgEl.src = `/assets/ranks/${tier}.png`;
     imgEl.onerror = () => (imgEl.src = "/assets/ranks/placeholder.png");
@@ -240,18 +152,17 @@ function setRankImages() {
   swapImage(document.getElementById("rankToImg"), getMainTier(toRank));
 }
 
-// ================= Pricing preview =================
-function calcPreviewTotal() {
+// ================= Backend-powered Pricing Preview =================
+let previewAbort = null;
+
+async function updatePreview() {
   const fromEl = document.getElementById("rankFrom");
   const toEl = document.getElementById("rankTo");
   const totalEl = document.getElementById("totalPreview");
   const summaryEl = document.getElementById("packageSummary");
   const hiddenPkg = document.getElementById("package");
 
-  if (!fromEl || !toEl || !totalEl || !summaryEl || !hiddenPkg) {
-    console.error("Missing required elements for pricing preview.");
-    return;
-  }
+  if (!fromEl || !toEl || !totalEl || !summaryEl || !hiddenPkg) return;
 
   const fromRank = fromEl.value || "";
   const toRank = toEl.value || "";
@@ -263,21 +174,59 @@ function calcPreviewTotal() {
     return;
   }
 
-  const steps = stepsUp(fromRank, toRank);
-  if (steps <= 0) {
+  if (stepsUp(fromRank, toRank) <= 0) {
     totalEl.textContent = "$0.00";
     hiddenPkg.value = "";
     summaryEl.textContent = "Desired rank must be higher than current rank.";
     return;
   }
 
-  const base = calcBasePrice(fromRank, toRank);
-  const mult = getAddOnMultiplier();
-  const total = base * mult;
+  const addons = getAddOns();
+  const heroName = document.getElementById("heroName")?.value?.trim() || "";
 
-  hiddenPkg.value = buildPackageValue(fromRank, toRank);
-  totalEl.textContent = `$${total.toFixed(2)}`;
-  summaryEl.textContent = `${buildPackageLabel(fromRank, toRank)} (base: $${base.toFixed(2)})`;
+  const divisionPointsRaw = document.getElementById("divisionPoints")?.value ?? "";
+  const divisionPoints = divisionPointsRaw === "" ? null : Number(divisionPointsRaw);
+
+  // If user types something invalid, just treat as null for preview
+  const safeDivisionPoints = Number.isFinite(divisionPoints) && divisionPoints >= 0 ? divisionPoints : null;
+
+  const pkg = buildPackageValue(fromRank, toRank);
+  hiddenPkg.value = pkg;
+
+  // UI while loading
+  totalEl.textContent = "…";
+  summaryEl.textContent = `${buildPackageLabel(fromRank, toRank)} (preview)`;
+
+  // Cancel previous request if user changes fast
+  if (previewAbort) previewAbort.abort();
+  previewAbort = new AbortController();
+
+  try {
+    const res = await fetch("/api/create-checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: previewAbort.signal,
+      body: JSON.stringify({
+        quote: true,
+        game: GAME_KEY,
+        package: pkg,
+        rankFrom: fromRank,
+        rankTo: toRank,
+        divisionPoints: safeDivisionPoints,
+        addons,
+        heroName,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error || "Preview failed");
+
+    totalEl.textContent = `$${data.amount}`;
+  } catch (e) {
+    if (e.name === "AbortError") return;
+    totalEl.textContent = "$0.00";
+    summaryEl.textContent = `Preview error: ${e.message}`;
+  }
 }
 
 // ================= Wiring / init =================
@@ -289,26 +238,36 @@ function init() {
 
   setHeroVisibility();
   setRankImages();
-  calcPreviewTotal();
+  updatePreview();
 
   // Rank listeners
   document.getElementById("rankFrom")?.addEventListener("change", () => {
     populateRankToFiltered();
     setRankImages();
-    calcPreviewTotal();
+    updatePreview();
   });
 
   document.getElementById("rankTo")?.addEventListener("change", () => {
     setRankImages();
-    calcPreviewTotal();
+    updatePreview();
   });
 
   // Add-on listeners
   ["addonPriority", "addonHero", "addonLowRR"].forEach((id) => {
     document.getElementById(id)?.addEventListener("change", () => {
       setHeroVisibility();
-      calcPreviewTotal();
+      updatePreview();
     });
+  });
+
+  // Division points affects metadata (not price), but we can still refresh preview for consistency
+  document.getElementById("divisionPoints")?.addEventListener("input", () => {
+    updatePreview();
+  });
+
+  // Hero name input affects validation if Specific Hero is on
+  document.getElementById("heroName")?.addEventListener("input", () => {
+    updatePreview();
   });
 
   // Submit
@@ -324,15 +283,15 @@ function init() {
     }
 
     try {
-      const discord = document.getElementById("discord").value.trim();
-      const platform = document.getElementById("platform").value;
-      const ign = document.getElementById("ign").value.trim();
-      const region = document.getElementById("region").value;
-      const notes = document.getElementById("notes").value.trim();
+      const discord = document.getElementById("discord")?.value?.trim() || "";
+      const platform = document.getElementById("platform")?.value || "";
+      const ign = document.getElementById("ign")?.value?.trim() || "";
+      const region = document.getElementById("region")?.value || "";
+      const notes = document.getElementById("notes")?.value?.trim() || "";
 
-      const rankFrom = document.getElementById("rankFrom").value;
-      const rankTo = document.getElementById("rankTo").value;
-      const pkg = document.getElementById("package").value;
+      const rankFrom = document.getElementById("rankFrom")?.value || "";
+      const rankTo = document.getElementById("rankTo")?.value || "";
+      const pkg = document.getElementById("package")?.value || "";
 
       // Optional division points (only under current)
       const divisionPointsRaw = document.getElementById("divisionPoints")?.value ?? "";
@@ -342,16 +301,14 @@ function init() {
       }
 
       if (!discord || !ign) throw new Error("Please fill out Discord username and In-game name.");
+      if (!platform) throw new Error("Please select your platform.");
+      if (!region) throw new Error("Please select your region.");
       if (!rankFrom) throw new Error("Please select your current rank.");
       if (!rankTo) throw new Error("Please select your desired rank.");
       if (stepsUp(rankFrom, rankTo) <= 0) throw new Error("Desired rank must be higher than current rank.");
       if (!pkg) throw new Error("Package selection is invalid. Please re-select ranks.");
 
-      const addons = {
-        priority: document.getElementById("addonPriority").checked,
-        specificHero: document.getElementById("addonHero").checked,
-        lowRR: document.getElementById("addonLowRR").checked,
-      };
+      const addons = getAddOns();
 
       const heroName = document.getElementById("heroName")?.value?.trim() || "";
       if (addons.specificHero && !heroName) {

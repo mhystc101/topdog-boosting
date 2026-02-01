@@ -4,232 +4,364 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>TopDog Boosting</title>
-    <meta
-      name="description"
-      content="TopDog Boosting — fast, secure checkout, and Discord support. Pick your game and start an order."
-    />
 
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Shared site theme -->
     <link rel="stylesheet" href="/assets/topdog.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
-  <!-- ✅ Removed bg-slate-950 so topdog.css can control background via --bg -->
-  <body class="min-h-screen text-slate-100">
-    <!-- ✅ Shared glow (from topdog.css) -->
-    <div class="td-glow"></div>
+  <body class="min-h-screen bg-slate-950 text-slate-100 text-[16.5px] leading-relaxed">
+    <!-- Background glow -->
+    <div class="pointer-events-none fixed inset-0 overflow-hidden">
+      <div
+        class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-indigo-600/20 blur-3xl"
+      ></div>
+      <div
+        class="absolute -bottom-40 right-0 h-[520px] w-[520px] rounded-full bg-sky-500/10 blur-3xl"
+      ></div>
+    </div>
 
-    <!-- ✅ Shared shell + container (from topdog.css) -->
-    <div class="td-shell">
-      <div class="td-container-wide">
-        <!-- Top bar -->
-        <header class="border-b border-slate-800 bg-slate-950/80">
-          <div class="w-full px-6 py-4 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3 mt-2 w-fit">
-              <img
-                src="/assets/logo.png"
-                alt="TopDog Boosting"
-                class="h-20 w-20 object-contain"
-              />
-              <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">
-                TopDog <span class="text-indigo-400">Boosting</span>
-              </h1>
-            </a>
+    <!-- Full-width shell -->
+    <div class="relative w-full px-6 lg:px-12 xl:px-16 py-14 td-home">
+      <!-- Wider container so sidebars actually have room -->
+      <div class="w-full">
+        <header class="mb-14">
+          <!-- Center the header/hero area -->
+          <div class="mx-auto w-full max-w-[1320px]">
+            <div class="flex items-center justify-between gap-4">
+              <a href="/" class="flex items-center gap-3">
+                <img
+                  src="/assets/logo.png"
+                  alt="TopDog Boosting"
+                  class="h-12 w-12 rounded-xl object-contain"
+                />
+                <div class="text-xl font-extrabold tracking-tight">
+                  TopDog <span class="text-indigo-400">Boosting</span>
+                </div>
+              </a>
 
-            <div class="flex items-center gap-3">
-              <!-- Discord icon -->
-              <a
-                href="https://discord.gg/rF5d89mQRq"
-                target="_blank"
-                rel="noopener"
-                class="group flex h-10 w-10 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/60 hover:border-indigo-500 transition"
-                aria-label="Join our Discord"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 127.14 96.36"
-                  class="h-5 w-5 fill-slate-300 group-hover:fill-indigo-400 transition"
+              <div class="flex items-center gap-3">
+                <!-- Discord icon -->
+                <a
+                  href="https://discord.gg/rF5d89mQRq"
+                  target="_blank"
+                  rel="noopener"
+                  class="group flex h-11 w-11 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/60 hover:border-indigo-500 transition"
+                  aria-label="Join our Discord"
+                  title="Join our Discord"
                 >
-                  <path
-                    d="M107.7 8.07A105.15 105.15 0 0081.47.8a72.06 72.06 0 00-3.36 6.83
-                    97.68 97.68 0 00-29.06 0A72.37 72.37 0 0045.7.8
-                    105.89 105.89 0 0019.45 8.09C2.8 32.65-1.71 56.6.54 80.21
-                    a105.73 105.73 0 0032.17 16.15 77.7 77.7 0 006.89-11.11
-                    68.42 68.42 0 01-10.85-5.18c.91-.66 1.8-1.34 2.66-2.06
-                    20.86 9.8 43.63 9.8 64.29 0 .87.72 1.76 1.4 2.66 2.06
-                    a68.68 68.68 0 01-10.87 5.19 77 77 0 006.89 11.1
-                    105.25 105.25 0 0032.19-16.14c2.64-27.56-4.51-51.48-18.94-72.15zM42.45 65.69c-6.18 0-11.29-5.64-11.29-12.59
-                    0-6.95 4.99-12.6 11.29-12.6s11.35 5.65 11.29 12.6
-                    c0 6.95-5 12.59-11.29 12.59zm42.24 0c-6.18 0-11.29-5.64-11.29-12.59
-                    0-6.95 4.99-12.6 11.29-12.6s11.35 5.65 11.29 12.6
-                    c0 6.95-5 12.59-11.29 12.59z"
-                  />
-                </svg>
-              </a>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 127.14 96.36"
+                    class="h-5 w-5 fill-slate-300 group-hover:fill-indigo-400 transition"
+                  >
+                    <path
+                      d="M107.7 8.07A105.15 105.15 0 0081.47.8a72.06 72.06 0 00-3.36 6.83
+                      97.68 97.68 0 00-29.06 0A72.37 72.37 0 0045.7.8
+                      105.89 105.89 0 0019.45 8.09C2.8 32.65-1.71 56.6.54 80.21
+                      a105.73 105.73 0 0032.17 16.15 77.7 77.7 0 006.89-11.11
+                      68.42 68.42 0 01-10.85-5.18c.91-.66 1.8-1.34 2.66-2.06
+                      20.86 9.8 43.63 9.8 64.29 0 .87.72 1.76 1.4 2.66 2.06
+                      a68.68 68.68 0 01-10.87 5.19 77 77 0 006.89 11.1
+                      105.25 105.25 0 0032.19-16.14c2.64-27.56-4.51-51.48-18.94-72.15zM42.45 65.69c-6.18 0-11.29-5.64-11.29-12.59
+                      0-6.95 4.99-12.6 11.29-12.6s11.35 5.65 11.29 12.6
+                      c0 6.95-5 12.59-11.29 12.59zm42.24 0c-6.18 0-11.29-5.64-11.29-12.59
+                      0-6.95 4.99-12.6 11.29-12.6s11.35 5.65 11.29 12.6
+                      c0 6.95-5 12.59-11.29 12.59z"
+                    />
+                  </svg>
+                </a>
 
-              <!-- Existing CTA -->
-              <a
-                href="#games"
-                class="rounded-xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-2 font-semibold text-sm"
-              >
-                Start Order
-              </a>
+                
+              </div>
+            </div>
+
+            <div class="mt-10 grid gap-8 lg:grid-cols-[1.35fr_0.65fr]">
+              <div>
+                <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight">
+                  Rank boosts that are
+                  <span class="text-indigo-400">clean</span>,
+                  <span class="text-indigo-400">fast</span>,
+                  and <span class="text-indigo-400">safe</span>.
+                </h1>
+
+                <p class="mt-5 text-slate-300 max-w-3xl text-lg">
+                  Pick your game, choose a package, and pay through Stripe. After payment, you’ll get a Ticket ID — use it to open a support ticket so we can start your order.
+                </p>
+
+
+                <div class="mt-8 grid gap-4 sm:grid-cols-3">
+                  <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+                    <p class="text-base font-semibold">Fast turnaround</p>
+                    <p class="text-sm text-slate-400 mt-1">Queue-based, priority available.</p>
+                  </div>
+                  <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+                    <p class="text-base font-semibold">Secure checkout</p>
+                    <p class="text-sm text-slate-400 mt-1">Payments handled by Stripe.</p>
+                  </div>
+                  <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+                    <p class="text-base font-semibold">Discord support</p>
+                    <p class="text-sm text-slate-400 mt-1">24/7 Discord Support Team</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-8">
+                <p class="text-base font-semibold">What you get</p>
+                <ul class="mt-5 space-y-3 text-base text-slate-300">
+                  <li class="flex gap-3">
+                    <span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>
+                    Clear packages + add-ons
+                  </li>
+                  <li class="flex gap-3">
+                    <span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>
+                    Secure Stripe checkout
+                  </li>
+                  <li class="flex gap-3">
+                    <span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>
+                    Ticket ID after payment (open a support ticket)
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </header>
 
-        <!-- Hero -->
-        <section class="pt-12 pb-10">
-          <div class="grid lg:grid-cols-2 gap-10 items-center">
-            <div>
-              <p class="text-slate-300 mt-4 text-lg">
-                Pick your game, choose a package, and pay through Stripe. We contact you on Discord and get it done.
-              </p>
+        <!-- TRUE 3-COLUMN GRID (bigger + taller + more scroll) -->
+        <div
+          class="grid items-start gap-10 w-full px-8 lg:px-20 xl:px-28 2xl:px-36
+                 lg:grid-cols-[640px_minmax(0,1fr)_640px]"
+        >
+          <!-- LEFT -->
+          <aside class="space-y-8 lg:sticky lg:top-10">
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-9">
+              <p class="text-base font-semibold">Reviews</p>
+              <p class="text-sm text-slate-400 mt-3">Swap these with real screenshots / quotes later.</p>
 
-              <div class="mt-6 flex gap-3">
-                <a
-                  href="#games"
-                  class="rounded-2xl bg-indigo-600 hover:bg-indigo-500 transition px-6 py-3 font-semibold"
-                >
-                  Browse Games
-                </a>
-                <!-- ✅ Fix: #how didn't exist, route to FAQ for now -->
-                <a
-                  href="#faq"
-                  class="rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-600 transition px-6 py-3 font-semibold"
-                >
-                  How it works
-                </a>
-              </div>
+              <div class="mt-6 space-y-4">
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <p class="text-base font-semibold">“Super fast and chill.”</p>
+                  <p class="text-sm text-slate-400 mt-2">— Discord user</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <p class="text-base font-semibold">“Price matched what it said.”</p>
+                  <p class="text-sm text-slate-400 mt-2">— Verified buyer</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <p class="text-base font-semibold">“No sketchy stuff, worked clean.”</p>
+                  <p class="text-sm text-slate-400 mt-2">— Repeat customer</p>
+                </div>
 
-              <div class="mt-8 grid sm:grid-cols-3 gap-3">
-                <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4">
-                  <p class="font-semibold">Fast turnaround</p>
-                  <p class="text-xs text-slate-400 mt-1">Queue-based, priority available.</p>
-                </div>
-                <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4">
-                  <p class="font-semibold">Secure checkout</p>
-                  <p class="text-xs text-slate-400 mt-1">Payments handled by Stripe.</p>
-                </div>
-                <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4">
-                  <p class="font-semibold">Discord support</p>
-                  <p class="text-xs text-slate-400 mt-1">We message your Discord.</p>
+                <!-- Extra item to increase column height a bit -->
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <p class="text-base font-semibold">“Got contacted right after checkout.”</p>
+                  <p class="text-sm text-slate-400 mt-2">— New buyer</p>
                 </div>
               </div>
             </div>
 
-            <div class="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900/60 to-slate-950 p-6">
-              <p class="text-sm text-slate-300">What you get</p>
-              <ul class="mt-4 space-y-3 text-slate-200">
-                <li class="flex gap-3">
-                  <span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
-                  Clear packages + add-ons
-                </li>
-                <li class="flex gap-3">
-                  <span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
-                  Secure Stripe checkout
-                </li>
-                <li class="flex gap-3">
-                  <span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
-                  Discord contact after payment
-                </li>
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-9">
+              <p class="text-base font-semibold">Trust</p>
+              <ul class="mt-6 space-y-3 text-base text-slate-300">
+                <li class="flex gap-3"><span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>No account sharing in DMs</li>
+                <li class="flex gap-3"><span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>Clear add-ons</li>
+                <li class="flex gap-3"><span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>Stripe receipts automatically</li>
+                <li class="flex gap-3"><span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>Queue + priority options</li>
               </ul>
             </div>
-          </div>
-        </section>
+          </aside>
 
-        <!-- Games catalog -->
-        <section id="games" class="pb-14">
-          <div>
-            <h2 class="text-2xl font-bold">Game Catalog</h2>
-            <p class="text-slate-400 mt-1">Click a game to open its checkout.</p>
+          <!-- CENTER (bigger + more breathing room) -->
+          <main id="catalog" class="space-y-12 min-w-0 w-full max-w-[1240px] justify-self-center">
+            <section>
+              <div>
+                <h2 class="text-2xl font-extrabold">Game Catalog</h2>
+                <p class="text-base text-slate-400 mt-2">Click a game to open its checkout.</p>
+              </div>
 
-            <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <!-- Rivals -->
-              <a
-                href="/rivals/"
-                class="group rounded-3xl overflow-hidden border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition"
-              >
-                <div class="aspect-[16/9] bg-slate-950">
-                  <img
-                    src="/assets/games/rivals.jpg"
-                    alt="Rivals"
-                    class="h-full w-full object-cover opacity-90 group-hover:opacity-100 transition"
-                  />
-                </div>
-                <div class="p-5">
-                  <div class="flex justify-between items-center">
-                    <p class="font-bold text-lg">Rivals</p>
-                    <span class="text-xs bg-emerald-500/15 text-emerald-300 px-2 py-1 rounded-full">
-                      Live
-                    </span>
+              <div class="mt-7 grid gap-6 md:grid-cols-2">
+                <a
+                  href="/rivals/"
+                  class="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition"
+                >
+                  <div class="aspect-[16/9] bg-slate-950">
+                    <img
+                      src="/assets/games/rivals.jpg"
+                      alt="Rivals"
+                      class="h-full w-full object-cover opacity-95 group-hover:opacity-100 transition"
+                      onerror="this.style.display='none'"
+                    />
                   </div>
-                  <p class="text-sm text-slate-400 mt-1">Rank packages + add-ons</p>
-                </div>
-              </a>
-
-              <!-- ✅ Rocket League (matched styling to Rivals card) -->
-              <a
-                href="/rocketleague/"
-                class="group rounded-3xl overflow-hidden border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition"
-              >
-                <div class="aspect-[16/9] bg-slate-950">
-                  <img
-                    src="/assets/games/rocketleague.jpg"
-                    alt="Rocket League"
-                    class="h-full w-full object-cover opacity-90 group-hover:opacity-100 transition"
-                  />
-                </div>
-                <div class="p-5">
-                  <div class="flex justify-between items-center">
-                    <p class="font-bold text-lg">Rocket League</p>
-                    <span class="text-xs bg-emerald-500/15 text-emerald-300 px-2 py-1 rounded-full">
-                      Live
-                    </span>
+                  <div class="p-6">
+                    <div class="flex items-center justify-between">
+                      <p class="text-lg font-semibold">Rivals</p>
+                      <span class="text-xs rounded-full border border-emerald-700/50 bg-emerald-500/10 px-2.5 py-1 text-emerald-200">
+                        Live
+                      </span>
+                    </div>
+                    <p class="text-sm text-slate-400 mt-2">Rank packages + add-ons</p>
                   </div>
-                  <p class="text-sm text-slate-400 mt-1">Rank boosts + add-ons</p>
+                </a>
+
+                <a
+                  href="/rocketleague/"
+                  class="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition"
+                >
+                  <div class="aspect-[16/9] bg-slate-950">
+                    <img
+                      src="/assets/games/rocketleague.jpg"
+                      alt="Rocket League"
+                      class="h-full w-full object-cover opacity-95 group-hover:opacity-100 transition"
+                      onerror="this.style.display='none'"
+                    />
+                  </div>
+                  <div class="p-6">
+                    <div class="flex items-center justify-between">
+                      <p class="text-lg font-semibold">Rocket League</p>
+                      <span class="text-xs rounded-full border border-emerald-700/50 bg-emerald-500/10 px-2.5 py-1 text-emerald-200">
+                        Live
+                      </span>
+                    </div>
+                    <p class="text-sm text-slate-400 mt-2">Rank boosts + add-ons</p>
+                  </div>
+                </a>
+              </div>
+            </section>
+
+            <section id="how" class="rounded-2xl border border-slate-800 bg-slate-900/40 p-9">
+              <h3 class="text-xl font-extrabold">How it works</h3>
+              <div class="mt-6 grid gap-4 sm:grid-cols-3">
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <p class="text-base font-semibold">1) Pick a game</p>
+                  <p class="text-sm text-slate-400 mt-2">Choose your current + goal rank.</p>
                 </div>
-              </a>
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <p class="text-base font-semibold">2) Pay securely</p>
+                  <p class="text-sm text-slate-400 mt-2">Stripe checkout (card only).</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <p class="text-base font-semibold">3) Open a ticket</p>
+                  <p class="text-sm text-slate-400 mt-2">Use your Ticket ID from checkout to create a support ticket.</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="rounded-2xl border border-slate-800 bg-slate-900/40 p-9">
+              <h3 class="text-xl font-extrabold">FAQ</h3>
+              <div class="mt-6 grid gap-4 md:grid-cols-2">
+                <details class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <summary class="cursor-pointer text-base font-semibold">How fast is it?</summary>
+                  <p class="mt-3 text-base text-slate-300">Depends on the queue + your current rank. Priority speeds it up.</p>
+                </details>
+
+                <details class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <summary class="cursor-pointer text-base font-semibold">What info do I need?</summary>
+                  <p class="mt-3 text-base text-slate-300">Discord + platform + in-game name, then ranks.</p>
+                </details>
+
+                <details class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <summary class="cursor-pointer text-base font-semibold">Refunds?</summary>
+                  <p class="mt-3 text-base text-slate-300">If work hasn’t started, we can usually cancel. Ask in Discord.</p>
+                </details>
+
+                <details class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <summary class="cursor-pointer text-base font-semibold">How do I start my order?</summary>
+                  <p class="mt-3 text-base text-slate-300">
+                    After payment, you’ll receive a Ticket ID. Open a support ticket and include that ID so we can confirm details and start.
+                  </p>
+                </details>
+              </div>
+            </section>
+          </main>
+
+          <!-- RIGHT -->
+          <aside id="start" class="space-y-8 lg:sticky lg:top-10">
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-9 ring-1 ring-indigo-500/25">
+              <p class="text-base font-semibold">Start your boost</p>
+              <p class="text-sm text-slate-400 mt-3">
+                Choose a game below. You’ll checkout on a secure Stripe page.
+              </p>
+
+              <div class="mt-6 grid gap-4">
+                <a
+                  href="/rivals/"
+                  class="rounded-2xl bg-indigo-600 hover:bg-indigo-500 transition px-5 py-4 text-base font-semibold text-center"
+                >
+                  Start Rivals Order
+                </a>
+                <a
+                  href="/rocketleague/"
+                  class="rounded-2xl border border-slate-800 bg-slate-900/60 hover:border-slate-600 transition px-5 py-4 text-base font-semibold text-center"
+                >
+                  Start Rocket League Order
+                </a>
+              </div>
+
+              <div class="mt-6 flex items-center gap-2 text-sm text-emerald-200">
+                <span class="h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+                Live Checkout
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-9">
+              <div class="flex items-center justify-between">
+                <p class="text-base font-semibold">Live stats</p>
+                <span class="text-sm text-slate-400">auto</span>
+              </div>
+
+              <div class="mt-6 grid grid-cols-2 gap-4">
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <p class="text-sm text-slate-400">Active boosters</p>
+                  <p id="activeBoosters" class="text-3xl font-extrabold mt-2">3</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
+                  <p class="text-sm text-slate-400">Orders in queue</p>
+                  <p id="ordersQueue" class="text-3xl font-extrabold mt-2">7</p>
+                </div>
+              </div>
+
+              <p class="text-sm text-slate-500 mt-5">
+                (Placeholders — connect to backend later.)
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-9">
+              <p class="text-base font-semibold">Security & Privacy</p>
+              <ul class="mt-6 space-y-3 text-base text-slate-300">
+                <li class="flex gap-3"><span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>Secure VPN connection</li>
+                <li class="flex gap-3"><span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>Appear offline</li>
+                <li class="flex gap-3"><span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>Boosters never talk to friends</li>
+                <li class="flex gap-3"><span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>Separate communication channel</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+
+        <footer class="mt-14 text-sm text-slate-500">
+          <div class="rounded-2xl border border-slate-800 bg-slate-900/30 p-6">
+            <div class="mt-2 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+              <p>© 2026 TopDog Boosting</p>
+              <p class="text-slate-600">Not affiliated with any game publisher.</p>
             </div>
           </div>
-        </section>
-
-        <!-- FAQ -->
-        <section id="faq" class="pb-16">
-          <h2 class="text-2xl font-bold">FAQ</h2>
-          <div class="mt-6 grid md:grid-cols-2 gap-5">
-            <details class="rounded-3xl border border-slate-800 bg-slate-900/40 p-6">
-              <summary class="font-semibold cursor-pointer">How fast is it?</summary>
-              <p class="text-sm text-slate-400 mt-3">Depends on package + queue. Priority moves you up.</p>
-            </details>
-            <details class="rounded-3xl border border-slate-800 bg-slate-900/40 p-6">
-              <summary class="font-semibold cursor-pointer">What info do I need?</summary>
-              <p class="text-sm text-slate-400 mt-3">Discord username, platform, region, in-game ID, and your package.</p>
-            </details>
-            <details class="rounded-3xl border border-slate-800 bg-slate-900/40 p-6">
-              <summary class="font-semibold cursor-pointer">Refunds?</summary>
-              <p class="text-sm text-slate-400 mt-3">Set your policy here (ex: full refund before work starts).</p>
-            </details>
-            <details class="rounded-3xl border border-slate-800 bg-slate-900/40 p-6">
-              <summary class="font-semibold cursor-pointer">How do I get contacted?</summary>
-              <p class="text-sm text-slate-400 mt-3">We contact the Discord username you enter on checkout.</p>
-            </details>
-          </div>
-        </section>
-
-        <footer class="border-t border-slate-800/70">
-          <div class="px-6 py-8 text-sm text-slate-500 flex flex-col md:flex-row gap-3 justify-between">
-            <p>© <span id="year"></span> TopDog Boosting</p>
-            <p class="text-slate-600">Not affiliated with any game publisher.</p>
-          </div>
         </footer>
-
-        <script>
-          document.getElementById("year").textContent = new Date().getFullYear();
-        </script>
       </div>
     </div>
+
+    <script>
+      (function () {
+        const boosters = document.getElementById("activeBoosters");
+        const queue = document.getElementById("ordersQueue");
+        if (!boosters || !queue) return;
+
+        function tick() {
+          const b = 2 + Math.floor(Math.random() * 5);
+          const q = 3 + Math.floor(Math.random() * 10);
+          boosters.textContent = String(b);
+          queue.textContent = String(q);
+        }
+        tick();
+        setInterval(tick, 12000);
+      })();
+    </script>
   </body>
 </html>

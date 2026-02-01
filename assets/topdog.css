@@ -113,3 +113,38 @@ body{
   object-fit: cover;
   border: 1px solid rgba(255,255,255,0.15);
 }
+
+
+
+/* =========================
+   HOMEPAGE: force full width
+   ========================= */
+.td-home,
+.td-home * {
+  box-sizing: border-box;
+}
+
+/* If anything on the homepage uses td-container, kill the max-width */
+.td-home .td-container {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* If anything uses td-container-wide, let it go wider */
+.td-home .td-container-wide {
+  max-width: 1800px !important;
+  width: 100% !important;
+}
+
+/* Also protect against any other "container" style that sneaks in */
+.td-home > .td-container,
+.td-home > .td-container-wide {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Optional: if your header area is still cramped, allow max width more */
+.td-home .home-max {
+  max-width: 1800px !important;
+  width: 100% !important;
+}

@@ -42,9 +42,7 @@ const SINGLE_RANKS = ["SSL"];
 function buildRanks() {
   const out = [];
   for (const tier of DIVISION_TIERS) {
-    out.push(`${tier} 3`);
-    out.push(`${tier} 2`);
-    out.push(`${tier} 1`);
+    out.push(`${tier} 3`, `${tier} 2`, `${tier} 1`);
   }
   for (const r of SINGLE_RANKS) out.push(r);
   return out;
@@ -79,31 +77,24 @@ const STEP_PRICE_BY_TIER = {
   diamond: 9.0,
   champion: 16.0,
   grandchampion: 30.0,
-  ssl: 199.0 // used only for final jump
+  ssl: 199.0, // used only for final jump
 };
 
 function tierKey(rank) {
   if (!rank) return "bronze";
-  const base = rank.split(" ")[0].toLowerCase();
+  const lower = String(rank).toLowerCase();
 
   // handle "Grand Champion"
-  if (rank.toLowerCase().startsWith("grand champion")) return "grandchampion";
-  if (base === "ssl") return "ssl";
-  return base; // bronze/silver/gold/platinum/diamond/champion
+  if (lower.startsWith("grand champion")) return "grandchampion";
+  if (lower.startsWith("ssl")) return "ssl";
+
+  return String(rank).split(" ")[0].toLowerCase(); // bronze/silver/gold/platinum/diamond/champion
 }
 
-// Sum per-step pricing from rankFrom -> rankTo
 function calcPreviewTotal(fromRank, toRank, addons) {
   const i = idx(fromRank);
   const j = idx(toRank);
   if (i < 0 || j < 0 || j <= i) return 0;
-
-  // Special: final single jump to SSL is flat
-  if (toRank === "SSL") {
-    // everything up to GC1 uses per-step, then SSL flat at end
-    // This assumes ladder ends ... "Grand Champion 1", "SSL"
-    // So the last step into SSL is the flat price.
-  }
 
   let total = 0;
 
@@ -118,7 +109,6 @@ function calcPreviewTotal(fromRank, toRank, addons) {
     }
   }
 
-  // Add-ons (same pattern as you already use)
   let mult = 1;
   if (addons.priority) mult += 0.2;
   if (addons.lowRR) mult += 0.5;
@@ -138,6 +128,8 @@ function getAddOns() {
 function populateRankFrom() {
   const from = document.getElementById("rankFrom");
   if (!from) return;
+
+  // prevent double-fill
   if (from.querySelectorAll("option").length > 1) return;
 
   for (const r of RANKS) {
@@ -258,9 +250,7 @@ function init() {
   });
 
   ["addonPriority", "addonLowRR"].forEach((id) => {
-    document.getElementById(id)?.addEventListener("change", () => {
-      updatePreview();
-    });
+    document.getElementById(id)?.addEventListener("change", updatePreview);
   });
 
   document.getElementById("orderForm")?.addEventListener("submit", async (e) => {
@@ -275,17 +265,19 @@ function init() {
     }
 
     try {
-      const discord = document.getElementById("discord").value.trim();
-      const platform = document.getElementById("platform").value;
-      const ign = document.getElementById("ign").value.trim();
-      const region = document.getElementById("region").value;
-      const notes = document.getElementById("notes").value.trim();
+      const discord = document.getElementById("discord")?.value?.trim() || "";
+      const platform = document.getElementById("platform")?.value || "";
+      const ign = document.getElementById("ign")?.value?.trim() || "";
+      const region = document.getElementById("region")?.value || "";
+      const notes = document.getElementById("notes")?.value?.trim() || "";
 
-      const rankFrom = document.getElementById("rankFrom").value;
-      const rankTo = document.getElementById("rankTo").value;
-      const pkg = document.getElementById("package").value;
+      const rankFrom = document.getElementById("rankFrom")?.value || "";
+      const rankTo = document.getElementById("rankTo")?.value || "";
+      const pkg = document.getElementById("package")?.value || "";
 
       if (!discord || !ign) throw new Error("Please fill out Discord username and In-game name.");
+      if (!platform) throw new Error("Please select your platform.");
+      if (!region) throw new Error("Please select your region.");
       if (!rankFrom) throw new Error("Please select your current rank.");
       if (!rankTo) throw new Error("Please select your desired rank.");
       if (stepsUp(rankFrom, rankTo) <= 0) throw new Error("Desired rank must be higher than current rank.");
@@ -323,29 +315,8 @@ function init() {
     }
   });
 }
-const res = await fetch("/api/create-checkout", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    quote: true,
-    game: "rivals",
-    discord: "temp",
-    platform: "PC",
-    ign: "temp",
-    region: "NA",
-    package: `rivals:${rankFrom}->${rankTo}`,
-    rankFrom,
-    rankTo,
-    divisionPoints: divisionPoints || null,
-    addons: { priority, specificHero, lowRR },
-    heroName: heroName || "",
-    notes: "",
-  }),
-});
 
-const data = await res.json();
-totalPreview.textContent = `$${data.amount}`;
-
+// Run after DOM is ready so listeners always attach
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", init);
 } else {

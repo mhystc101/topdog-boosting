@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="/assets/topdog.css" />
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-
-  <body class="min-h-screen bg-slate-950 text-slate-100 text-[16.5px] leading-relaxed">
+  <div class="mx-auto max-w-[1600px]">
+    <body class="min-h-screen bg-slate-950 text-slate-100 text-[16.5px] leading-relaxed overflow-x-hidden">
     <!-- Background glow -->
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
       <div class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-indigo-600/20 blur-3xl"></div>
@@ -68,18 +68,23 @@
 
             <div class="mt-10 grid gap-8 lg:grid-cols-[1.35fr_0.65fr]">
               <div>
-                <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight">
+                <h1 class="font-extrabold tracking-tight text-[clamp(2.5rem,5vw,3.75rem)]">
                   Rank boosts that are
                   <span class="text-indigo-400">clean</span>,
                   <span class="text-indigo-400">fast</span>,
                   and <span class="text-indigo-400">safe</span>.
                 </h1>
+                
+                <p class="mt-5 text-slate-300 max-w-3xl text-[clamp(1rem,1.6vw,1.125rem)]">
+                  Pick your game, choose a package, and pay through Stripe. After payment you’ll get a Ticket ID — use it to open a support ticket so we can start your order.
+                </p>
+                
 
                 <p class="mt-5 text-slate-300 max-w-3xl text-lg">
                   Pick your game, choose a package, and pay through Stripe. After payment you’ll get a Ticket ID — use it to open a support ticket so we can start your order.
                 </p>
 
-                <div class="mt-8 grid gap-4 sm:grid-cols-3">
+                <div class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                   <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
                     <p class="text-base font-semibold">Fast turnaround</p>
                     <p class="text-sm text-slate-400 mt-1">Queue-based, priority available.</p>
@@ -110,12 +115,14 @@
         <!-- TRUE 3-COLUMN GRID (MORE SPACING) -->
         <div
           class="grid items-start w-full
-                 gap-16 lg:gap-20
-                 px-8 lg:px-20 xl:px-24 2xl:px-28
-                 lg:grid-cols-[460px_minmax(0,1fr)_460px]"
+                gap-12 xl:gap-16
+                px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16
+                grid-cols-1
+                xl:grid-cols-[minmax(260px,360px)_minmax(560px,1fr)_minmax(260px,360px)]
+                2xl:grid-cols-[minmax(300px,420px)_minmax(680px,1fr)_minmax(300px,420px)]"
         >
           <!-- LEFT -->
-          <aside class="space-y-10 lg:sticky lg:top-12">
+          <aside class="min-w-0 space-y-10 xl:sticky xl:top-12">
             <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-9">
               <p class="text-base font-semibold">Reviews</p>
               <p class="text-sm text-slate-400 mt-3">Swap these with real screenshots / quotes later.</p>
@@ -148,14 +155,17 @@
           </aside>
 
           <!-- CENTER -->
-          <main id="catalog" class="space-y-14 min-w-0 w-full max-w-[1240px] justify-self-center">
+          <main id="catalog" class="min-w-0 w-full max-w-[1240px] justify-self-center space-y-14">
+
+
+
             <section>
               <div>
                 <h2 class="text-2xl font-extrabold">Game Catalog</h2>
                 <p class="text-base text-slate-400 mt-2">Click a game to open its checkout.</p>
               </div>
 
-              <div class="mt-8 grid gap-8 md:grid-cols-3">
+              <div class="mt-8 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 <a href="/rivals/" class="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition">
                   <div class="aspect-[16/9] bg-slate-950">
                     <img src="/assets/games/rivals.jpg" alt="Rivals" class="h-full w-full object-cover opacity-95 group-hover:opacity-100 transition" onerror="this.style.display='none'" />
@@ -245,7 +255,11 @@
           </main>
 
           <!-- RIGHT -->
-          <aside id="start" class="space-y-10 lg:sticky lg:top-12">
+          <aside
+            id="start"
+            class="min-w-0 space-y-10 xl:sticky xl:top-12"
+          >
+
             <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-9 ring-1 ring-indigo-500/25">
               <p class="text-base font-semibold">Start your boost</p>
               <p class="text-sm text-slate-400 mt-3">Choose a game below. You’ll checkout on a secure Stripe page.</p>
@@ -328,4 +342,5 @@
       })();
     </script>
   </body>
+</div>
 </html>

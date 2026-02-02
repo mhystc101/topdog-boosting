@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TopDog Orders • Arc Raiders</title>
+
+    <link rel="stylesheet" href="/assets/topdog.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+
+  </head>
+  
+
+  <body class="min-h-screen bg-slate-950 text-slate-100">
+    <!-- Background glow -->
+    <div class="pointer-events-none fixed inset-0 overflow-hidden">
+      <div class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-indigo-600/20 blur-3xl"></div>
+      <div class="absolute -bottom-40 right-0 h-[520px] w-[520px] rounded-full bg-sky-500/10 blur-3xl"></div>
+    </div>
+
+    <div class="relative w-full px-6 lg:px-16 xl:px-24 py-10">
+      <div class="mx-auto max-w-[1200px]">
+        <!-- Header -->
+        <header class="mb-8">
+          <div class="flex items-center justify-between gap-4">
+            <a href="/" class="flex items-center gap-3">
+              <img src="/assets/logo.png" alt="TopDog Boosting" class="h-10 w-10 rounded-xl object-contain" />
+              <div class="text-lg font-extrabold tracking-tight">
+                TopDog <span class="text-indigo-400">Boosting</span>
+              </div>
+            </a>
+
+            <div class="flex items-center gap-3">
+              <a href="/" class="rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-2 text-sm font-semibold">
+                Back
+              </a>
+              <a href="https://discord.gg/rF5d89mQRq" target="_blank"
+                 class="rounded-xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-2 text-sm font-semibold">
+                Open Ticket
+              </a>
+            </div>
+          </div>
+
+          <div class="mt-8">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">
+              Arc Raiders <span class="text-indigo-400">Starter Packs</span>
+            </h1>
+            <p class="mt-2 text-slate-300 max-w-3xl">
+              Choose a pack, preview the price, and checkout through Stripe.
+              After payment, you’ll receive an <strong>Order/Ticket ID</strong> — open a support ticket and include it to begin.
+            </p>
+            <div id="successBanner" class="hidden mt-6 rounded-2xl border border-emerald-700/40 bg-emerald-500/10 p-5">
+            <p class="text-sm font-semibold text-emerald-200">Payment successful ✅</p>
+            <p class="mt-2 text-sm text-slate-200">
+                Your Order/Ticket ID is: <span id="orderIdText" class="font-extrabold text-slate-50"></span>
+            </p>
+            <p class="mt-2 text-sm text-slate-300">
+                Open a support ticket and paste that ID so we can start your order.
+            </p>
+            </div>
+
+          </div>
+        </header>
+
+        <!-- Layout -->
+        <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] items-start">
+          <!-- LEFT -->
+          <section class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+            <h2 class="text-base font-extrabold">Build your order</h2>
+
+            <div class="mt-6 grid gap-4">
+              <!-- Pack -->
+              <div>
+                <label class="text-sm font-semibold">Pack</label>
+                <select id="pack"
+                  class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm">
+                  <option value="" disabled selected>Select a pack…</option>
+                  <option value="starter">🟢 Starter — $42</option>
+                  <option value="advanced">🔵 Advanced — $115</option>
+                  <option value="epic">🟣 Epic — $235</option>
+                  <option value="legendary">🟡 Legendary — $450</option>
+                </select>
+              </div>
+
+              <!-- Discord / IGN -->
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="text-sm font-semibold">Discord username</label>
+                  <input id="discord" type="text"
+                    class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+                <div>
+                  <label class="text-sm font-semibold">In-game name</label>
+                  <input id="ign" type="text"
+                    class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+              </div>
+
+              <!-- Platform / Region -->
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="text-sm font-semibold">Platform</label>
+                  <select id="platform"
+                    class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm">
+                    <option value="" disabled selected>Select platform…</option>
+                    <option value="PC">PC</option>
+                    <option value="PlayStation">PlayStation</option>
+                    <option value="Xbox">Xbox</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="text-sm font-semibold">Region</label>
+                  <select id="region"
+                    class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm">
+                    <option value="" disabled selected>Select region…</option>
+                    <option value="NA">NA</option>
+                    <option value="EU">EU</option>
+                    <option value="OCE">OCE</option>
+                    <option value="ASIA">Asia</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Notes -->
+              <div>
+                <label class="text-sm font-semibold">Extra notes (optional)</label>
+                <textarea id="notes" rows="4"
+                  class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm"></textarea>
+              </div>
+
+              <!-- Buttons -->
+              <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                <button id="previewBtn"
+                  class="rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm font-semibold">
+                  Preview Price
+                </button>
+                <button id="checkoutBtn"
+                  class="rounded-xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-3 text-sm font-semibold">
+                  Checkout
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- RIGHT -->
+          <aside class="space-y-6 lg:sticky lg:top-6">
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+              <p class="text-sm font-semibold">Price preview</p>
+              <div id="pricePreview"
+                class="mt-4 rounded-xl border border-slate-800 bg-slate-950/40 p-4 text-sm text-slate-400">
+                Select a pack to preview pricing.
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+              <p class="text-sm font-semibold">Pack details</p>
+              <div id="packDetails" class="mt-4 space-y-3"></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+    <script src="./app.js"></script>
+
+
+  </body>
+</html>

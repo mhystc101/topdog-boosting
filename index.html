@@ -12,35 +12,25 @@
   <body class="min-h-screen bg-slate-950 text-slate-100 text-[16.5px] leading-relaxed">
     <!-- Background glow -->
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
-      <div
-        class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-indigo-600/20 blur-3xl"
-      ></div>
-      <div
-        class="absolute -bottom-40 right-0 h-[520px] w-[520px] rounded-full bg-sky-500/10 blur-3xl"
-      ></div>
+      <div class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-indigo-600/20 blur-3xl"></div>
+      <div class="absolute -bottom-40 right-0 h-[520px] w-[520px] rounded-full bg-sky-500/10 blur-3xl"></div>
     </div>
 
     <!-- Full-width shell -->
     <div class="relative w-full px-6 lg:px-12 xl:px-16 py-14 td-home">
-      <!-- Wider container so sidebars actually have room -->
       <div class="w-full">
         <header class="mb-14">
-          <!-- Center the header/hero area -->
+          <!-- Center header/hero area -->
           <div class="mx-auto w-full max-w-[1320px]">
             <div class="flex items-center justify-between gap-4">
               <a href="/" class="flex items-center gap-3">
-                <img
-                  src="/assets/logo.png"
-                  alt="TopDog Boosting"
-                  class="h-12 w-12 rounded-xl object-contain"
-                />
+                <img src="/assets/logo.png" alt="TopDog Boosting" class="h-12 w-12 rounded-xl object-contain" />
                 <div class="text-xl font-extrabold tracking-tight">
                   TopDog <span class="text-indigo-400">Boosting</span>
                 </div>
               </a>
 
               <div class="flex items-center gap-3">
-                <!-- Discord icon -->
                 <a
                   href="https://discord.gg/rF5d89mQRq"
                   target="_blank"
@@ -49,11 +39,7 @@
                   aria-label="Join our Discord"
                   title="Join our Discord"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 127.14 96.36"
-                    class="h-5 w-5 fill-slate-300 group-hover:fill-indigo-400 transition"
-                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36" class="h-5 w-5 fill-slate-300 group-hover:fill-indigo-400 transition">
                     <path
                       d="M107.7 8.07A105.15 105.15 0 0081.47.8a72.06 72.06 0 00-3.36 6.83
                       97.68 97.68 0 00-29.06 0A72.37 72.37 0 0045.7.8
@@ -71,7 +57,12 @@
                   </svg>
                 </a>
 
-                
+                <a
+                  href="/work/"
+                  class="rounded-xl border border-slate-800 bg-slate-900/60 hover:border-slate-600 transition px-4 py-2 text-sm font-semibold"
+                >
+                  Work for Us
+                </a>
               </div>
             </div>
 
@@ -85,9 +76,8 @@
                 </h1>
 
                 <p class="mt-5 text-slate-300 max-w-3xl text-lg">
-                  Pick your game, choose a package, and pay through Stripe. After payment you’ll get a Ticket ID, use it to open a support ticket so we can start your order.
+                  Pick your game, choose a package, and pay through Stripe. After payment you’ll get a Ticket ID — use it to open a support ticket so we can start your order.
                 </p>
-
 
                 <div class="mt-8 grid gap-4 sm:grid-cols-3">
                   <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
@@ -108,28 +98,21 @@
               <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-8">
                 <p class="text-base font-semibold">What you get</p>
                 <ul class="mt-5 space-y-3 text-base text-slate-300">
-                  <li class="flex gap-3">
-                    <span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>
-                    Clear packages + add-ons
-                  </li>
-                  <li class="flex gap-3">
-                    <span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>
-                    Secure Stripe checkout
-                  </li>
-                  <li class="flex gap-3">
-                    <span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>
-                    Ticket ID after payment (open a support ticket)
-                  </li>
+                  <li class="flex gap-3"><span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>Clear packages + add-ons</li>
+                  <li class="flex gap-3"><span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>Secure Stripe checkout</li>
+                  <li class="flex gap-3"><span class="mt-2.5 h-2 w-2 rounded-full bg-indigo-400"></span>Ticket ID after payment (open a support ticket)</li>
                 </ul>
               </div>
             </div>
           </div>
         </header>
 
-        <!-- TRUE 3-COLUMN GRID (bigger + taller + more scroll) -->
+        <!-- TRUE 3-COLUMN GRID (adjusted sizing + spacing) -->
         <div
-          class="grid items-start gap-10 w-full px-8 lg:px-20 xl:px-28 2xl:px-36
-                 lg:grid-cols-[640px_minmax(0,1fr)_640px]"
+          class="grid items-start w-full
+                 gap-14 lg:gap-16
+                 px-6 lg:px-16 xl:px-20 2xl:px-24
+                 lg:grid-cols-[480px_minmax(0,1fr)_480px]"
         >
           <!-- LEFT -->
           <aside class="space-y-8 lg:sticky lg:top-10">
@@ -150,12 +133,6 @@
                   <p class="text-base font-semibold">“No sketchy stuff, worked clean.”</p>
                   <p class="text-sm text-slate-400 mt-2">— Repeat customer</p>
                 </div>
-
-                <!-- Extra item to increase column height a bit -->
-                <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
-                  <p class="text-base font-semibold">“Got contacted right after checkout.”</p>
-                  <p class="text-sm text-slate-400 mt-2">— New buyer</p>
-                </div>
               </div>
             </div>
 
@@ -170,7 +147,7 @@
             </div>
           </aside>
 
-          <!-- CENTER (bigger + more breathing room) -->
+          <!-- CENTER -->
           <main id="catalog" class="space-y-12 min-w-0 w-full max-w-[1240px] justify-self-center">
             <section>
               <div>
@@ -179,82 +156,45 @@
               </div>
 
               <div class="mt-7 grid gap-6 md:grid-cols-3">
-                <a
-                  href="/rivals/"
-                  class="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition"
-                >
+                <a href="/rivals/" class="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition">
                   <div class="aspect-[16/9] bg-slate-950">
-                    <img
-                      src="/assets/games/rivals.jpg"
-                      alt="Rivals"
-                      class="h-full w-full object-cover opacity-95 group-hover:opacity-100 transition"
-                      onerror="this.style.display='none'"
-                    />
+                    <img src="/assets/games/rivals.jpg" alt="Rivals" class="h-full w-full object-cover opacity-95 group-hover:opacity-100 transition" onerror="this.style.display='none'" />
                   </div>
                   <div class="p-6">
                     <div class="flex items-center justify-between">
                       <p class="text-lg font-semibold">Rivals</p>
-                      <span class="text-xs rounded-full border border-emerald-700/50 bg-emerald-500/10 px-2.5 py-1 text-emerald-200">
-                        Live
-                      </span>
+                      <span class="text-xs rounded-full border border-emerald-700/50 bg-emerald-500/10 px-2.5 py-1 text-emerald-200">Live</span>
                     </div>
                     <p class="text-sm text-slate-400 mt-2">Rank packages + add-ons</p>
                   </div>
                 </a>
 
-                <a
-                  href="/rocketleague/"
-                  class="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition"
-                >
+                <a href="/rocketleague/" class="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition">
                   <div class="aspect-[16/9] bg-slate-950">
-                    <img
-                      src="/assets/games/rocketleague.jpg"
-                      alt="Rocket League"
-                      class="h-full w-full object-cover opacity-95 group-hover:opacity-100 transition"
-                      onerror="this.style.display='none'"
-                    />
+                    <img src="/assets/games/rocketleague.jpg" alt="Rocket League" class="h-full w-full object-cover opacity-95 group-hover:opacity-100 transition" onerror="this.style.display='none'" />
                   </div>
                   <div class="p-6">
                     <div class="flex items-center justify-between">
                       <p class="text-lg font-semibold">Rocket League</p>
-                      <span class="text-xs rounded-full border border-emerald-700/50 bg-emerald-500/10 px-2.5 py-1 text-emerald-200">
-                        Live
-                      </span>
+                      <span class="text-xs rounded-full border border-emerald-700/50 bg-emerald-500/10 px-2.5 py-1 text-emerald-200">Live</span>
                     </div>
                     <p class="text-sm text-slate-400 mt-2">Rank boosts + add-ons</p>
                   </div>
                 </a>
-                <a
-                  href="/arcraiders/"
-                  class="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition"
-                >
-                  <div class="aspect-[16/9] bg-slate-950">
-                    <img
-                      src="/assets/games/arcraiders.jpg"
-                      alt="Arc Raiders"
-                      class="h-full w-full object-cover opacity-95 group-hover:opacity-100 transition"
-                      onerror="this.style.display='none'"
-                    />
-                  </div>
 
+                <a href="/arcraiders/" class="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition">
+                  <div class="aspect-[16/9] bg-slate-950">
+                    <img src="/assets/games/arcraiders.jpg" alt="Arc Raiders" class="h-full w-full object-cover opacity-95 group-hover:opacity-100 transition" onerror="this.style.display='none'" />
+                  </div>
                   <div class="p-6">
                     <div class="flex items-center justify-between">
                       <p class="text-lg font-semibold">Arc Raiders</p>
-                      <span class="text-xs rounded-full border border-violet-700/50 bg-violet-500/10 px-2.5 py-1 text-violet-200">
-                        New
-                      </span>
+                      <span class="text-xs rounded-full border border-emerald-700/50 bg-emerald-500/10 px-2.5 py-1 text-emerald-200">Live</span>
                     </div>
-
-                    <p class="text-sm text-slate-400 mt-2">
-                      Progression packs · Quests · Leveling
-                    </p>
-
-                    <p class="mt-3 text-sm text-slate-300">
-                      Starter → Legendary progression bundles
-                    </p>
+                    <p class="text-sm text-slate-400 mt-2">Progression packs · Quests · Leveling</p>
+                    <p class="mt-3 text-sm text-slate-300">Starter → Legendary progression bundles</p>
                   </div>
                 </a>
-
               </div>
             </section>
 
@@ -308,33 +248,21 @@
           <aside id="start" class="space-y-8 lg:sticky lg:top-10">
             <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-9 ring-1 ring-indigo-500/25">
               <p class="text-base font-semibold">Start your boost</p>
-              <p class="text-sm text-slate-400 mt-3">
-                Choose a game below. You’ll checkout on a secure Stripe page.
-              </p>
+              <p class="text-sm text-slate-400 mt-3">Choose a game below. You’ll checkout on a secure Stripe page.</p>
 
               <div class="mt-4 grid gap-3">
-                <a
-                  href="/rivals/"
-                  class="rounded-xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-3 text-sm font-semibold text-center"
-                >
+                <a href="/rivals/" class="rounded-xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-3 text-sm font-semibold text-center">
                   Start Rivals Order
                 </a>
 
-                <a
-                  href="/rocketleague/"
-                  class="rounded-xl border border-slate-800 bg-slate-900/60 hover:border-slate-600 transition px-4 py-3 text-sm font-semibold text-center"
-                >
+                <a href="/rocketleague/" class="rounded-xl border border-slate-800 bg-slate-900/60 hover:border-slate-600 transition px-4 py-3 text-sm font-semibold text-center">
                   Start Rocket League Order
                 </a>
 
-                <a
-                  href="/arcraiders/"
-                  class="rounded-xl border border-slate-800 bg-slate-900/60 hover:border-slate-600 transition px-4 py-3 text-sm font-semibold text-center"
-                >
+                <a href="/arcraiders/" class="rounded-xl border border-slate-800 bg-slate-900/60 hover:border-slate-600 transition px-4 py-3 text-sm font-semibold text-center">
                   Start Arc Raiders Order
                 </a>
               </div>
-
 
               <div class="mt-6 flex items-center gap-2 text-sm text-emerald-200">
                 <span class="h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
@@ -359,9 +287,7 @@
                 </div>
               </div>
 
-              <p class="text-sm text-slate-500 mt-5">
-                (Placeholders — connect to backend later.)
-              </p>
+              <p class="text-sm text-slate-500 mt-5">(Placeholders — connect to backend later.)</p>
             </div>
 
             <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-9">

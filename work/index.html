@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TopDog • Work for Us</title>
+
+    <link rel="stylesheet" href="/assets/topdog.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="min-h-screen bg-slate-950 text-slate-100">
+    <!-- Background glow -->
+    <div class="pointer-events-none fixed inset-0 overflow-hidden">
+      <div class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-indigo-600/20 blur-3xl"></div>
+      <div class="absolute -bottom-40 right-0 h-[520px] w-[520px] rounded-full bg-sky-500/10 blur-3xl"></div>
+    </div>
+
+    <div class="relative w-full px-6 lg:px-16 xl:px-24 py-10">
+      <div class="mx-auto max-w-[1200px]">
+        <!-- Header -->
+        <header class="mb-10">
+          <div class="flex items-center justify-between gap-4">
+            <a href="/" class="flex items-center gap-3">
+              <img
+                src="/assets/logo.png"
+                alt="TopDog Boosting"
+                class="h-10 w-10 rounded-xl object-contain"
+              />
+              <div class="text-lg font-extrabold tracking-tight">
+                TopDog <span class="text-indigo-400">Boosting</span>
+              </div>
+            </a>
+
+            <div class="flex items-center gap-3">
+              <a
+                href="/"
+                class="rounded-xl border border-slate-800 bg-slate-900/60 hover:border-slate-600 transition px-4 py-2 text-sm font-semibold"
+              >
+                Back
+              </a>
+              <a
+                href="https://discord.gg/rF5d89mQRq"
+                target="_blank"
+                rel="noopener"
+                class="rounded-xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-2 text-sm font-semibold"
+              >
+                Join Discord
+              </a>
+            </div>
+          </div>
+
+          <div class="mt-8">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">
+              Work with <span class="text-indigo-400">TopDog</span>
+            </h1>
+            <p class="mt-2 text-slate-300 max-w-3xl">
+              Pick a role below. Click one to open the application.
+            </p>
+          </div>
+        </header>
+
+        <!-- Two big pillars -->
+        <section class="grid gap-6 md:grid-cols-2">
+          <!-- Affiliate -->
+          <button
+            id="openAffiliate"
+            type="button"
+            class="group relative overflow-hidden w-full text-left rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition"
+          >
+            <div class="absolute inset-0">
+              <img
+                src="/assets/work/affiliate.jpg"
+                alt="Affiliate"
+                class="h-full w-full object-cover opacity-30 group-hover:opacity-40 transition"
+                onerror="this.style.display='none'"
+              />
+              <div class="absolute inset-0 bg-gradient-to-b from-slate-950/10 via-slate-950/60 to-slate-950/90"></div>
+            </div>
+
+            <div class="relative p-8 min-h-[320px] flex flex-col justify-end">
+              <p class="text-xs text-slate-300/80">Earn per sale</p>
+              <h2 class="mt-2 text-2xl font-extrabold">Affiliate</h2>
+              <p class="mt-2 text-sm text-slate-300 max-w-md">
+                Promote TopDog and earn commissions from customers you bring in.
+              </p>
+              <div
+                class="mt-5 inline-flex w-fit items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold group-hover:bg-indigo-500 transition"
+              >
+                Apply as Affiliate →
+              </div>
+            </div>
+          </button>
+
+          <!-- Booster -->
+          <button
+            id="openBooster"
+            type="button"
+            class="group relative overflow-hidden w-full text-left rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500 transition"
+          >
+            <div class="absolute inset-0">
+              <img
+                src="/assets/work/booster.jpg"
+                alt="Booster"
+                class="h-full w-full object-cover opacity-30 group-hover:opacity-40 transition"
+                onerror="this.style.display='none'"
+              />
+              <div class="absolute inset-0 bg-gradient-to-b from-slate-950/10 via-slate-950/60 to-slate-950/90"></div>
+            </div>
+
+            <div class="relative p-8 min-h-[320px] flex flex-col justify-end">
+              <p class="text-xs text-slate-300/80">Get paid per order</p>
+              <h2 class="mt-2 text-2xl font-extrabold">Booster</h2>
+              <p class="mt-2 text-sm text-slate-300 max-w-md">
+                Join the booster team. Take orders when you’re available.
+              </p>
+              <div
+                class="mt-5 inline-flex w-fit items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold group-hover:bg-indigo-500 transition"
+              >
+                Apply as Booster →
+              </div>
+            </div>
+          </button>
+        </section>
+
+        <!-- Forms (HIDDEN until clicked) -->
+        <div class="mt-10 grid gap-6 lg:grid-cols-2 items-start">
+          <!-- Affiliate form -->
+          <section id="affiliateForm" class="hidden rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+            <h3 class="text-lg font-extrabold">Affiliate Application</h3>
+            <p class="mt-1 text-sm text-slate-400">Placeholder form — you’ll decide what to collect later.</p>
+
+            <form class="mt-6 grid gap-4">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="text-sm font-semibold">Name</label>
+                  <input class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+                <div>
+                  <label class="text-sm font-semibold">Email</label>
+                  <input type="email" class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+              </div>
+
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="text-sm font-semibold">Discord</label>
+                  <input placeholder="name#0000" class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+                <div>
+                  <label class="text-sm font-semibold">Country / Region</label>
+                  <input class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+              </div>
+
+              <div>
+                <label class="text-sm font-semibold">Where will you promote?</label>
+                <textarea rows="4" class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm"></textarea>
+              </div>
+
+              <button type="button" class="rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm font-semibold">
+                Submit (coming soon)
+              </button>
+            </form>
+          </section>
+
+          <!-- Booster form -->
+          <section id="boosterForm" class="hidden rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+            <h3 class="text-lg font-extrabold">Booster Application</h3>
+            <p class="mt-1 text-sm text-slate-400">Placeholder form — you’ll decide what to collect later.</p>
+
+            <form class="mt-6 grid gap-4">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="text-sm font-semibold">Name</label>
+                  <input class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+                <div>
+                  <label class="text-sm font-semibold">Email</label>
+                  <input type="email" class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+              </div>
+
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="text-sm font-semibold">Discord</label>
+                  <input placeholder="name#0000" class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+                <div>
+                  <label class="text-sm font-semibold">Main game(s)</label>
+                  <input placeholder="Rivals / Rocket League / Arc Raiders" class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+              </div>
+
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="text-sm font-semibold">Availability</label>
+                  <input placeholder="hours/day, days/week" class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+                <div>
+                  <label class="text-sm font-semibold">Region</label>
+                  <input placeholder="NA / EU / etc" class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm" />
+                </div>
+              </div>
+
+              <div>
+                <label class="text-sm font-semibold">Experience / proof</label>
+                <textarea rows="4" class="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950/40 px-3 py-3 text-sm"></textarea>
+              </div>
+
+              <button type="button" class="rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm font-semibold">
+                Submit (coming soon)
+              </button>
+            </form>
+          </section>
+        </div>
+
+        <footer class="mt-10 text-xs text-slate-500">
+          <div class="rounded-2xl border border-slate-800 bg-slate-900/30 p-5">
+            <div class="mt-2 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+              <p>© 2026 TopDog Boosting</p>
+              <p class="text-slate-600">Not affiliated with any game publisher.</p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Show form ONLY when role is clicked -->
+    <script>
+      (() => {
+        const affiliateBtn = document.getElementById("openAffiliate");
+        const boosterBtn = document.getElementById("openBooster");
+
+        const affiliateForm = document.getElementById("affiliateForm");
+        const boosterForm = document.getElementById("boosterForm");
+
+        function show(formToShow) {
+          affiliateForm.classList.add("hidden");
+          boosterForm.classList.add("hidden");
+
+          formToShow.classList.remove("hidden");
+
+          formToShow.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+
+        affiliateBtn.addEventListener("click", () => show(affiliateForm));
+        boosterBtn.addEventListener("click", () => show(boosterForm));
+      })();
+    </script>
+  </body>
+</html>

@@ -145,20 +145,27 @@ function addonMultiplierRL(addons = {}) {
 }
 
 // ===================== ARC RAIDERS CONFIG =====================
-const ARC_PACKS = {
-  starter: { price: 42.0, label: "Starter" },
-  advanced: { price: 115.0, label: "Advanced" },
-  epic: { price: 235.0, label: "Epic" },
-  legendary: { price: 450.0, label: "Legendary" },
+const ARC_RAIDERS_PACKS = {
+  starter: {
+    price: 42,
+    label: "Starter Pack",
+  },
+  advanced: {
+    price: 115,
+    label: "Advanced Pack",
+  },
+  epic: {
+    price: 235,
+    label: "Epic Pack",
+  },
+  legendary: {
+    price: 450,
+    label: "Legendary Pack",
+  },
 };
 
-function arcPackKeyFromPackage(pkg) {
-  // expects "arcraiders:starter" etc
-  if (!pkg) return "";
-  const s = String(pkg);
-  if (!s.startsWith("arcraiders:")) return "";
-  return s.split(":")[1] || "";
-}
+const ARC_RAIDERS_PLATFORMS = ["PC", "PlayStation", "Xbox"];
+const ARC_RAIDERS_REGIONS = ["NA", "EU", "OCE", "ASIA"];
 
 // ===================== HANDLER =====================
 exports.handler = async (event) => {
@@ -295,35 +302,60 @@ exports.handler = async (event) => {
       }
 
       case "arcraiders": {
-      const PRICES = {
-        starter: 42,
-        advanced: 115,
-        epic: 235,
-        legendary: 450,
-      };
-
+      // ---------- REQUIRED FIELDS ----------
       if (!pkg || !pkg.startsWith("arcraiders:")) {
-        return { statusCode: 400, body: JSON.stringify({ error: "Invalid Arc Raiders package." }) };
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: "Invalid Arc Raiders package." }),
+        };
       }
 
+      if (!platform || !region || !discord || !ign) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: "Missing required fields." }),
+        };
+      }
+
+      // ---------- VALIDATE PLATFORM / REGION ----------
+      if (!ARC_RAIDERS_PLATFORMS.includes(platform)) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: "Invalid platform." }),
+        };
+      }
+
+      if (!ARC_RAIDERS_REGIONS.includes(region)) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: "Invalid region." }),
+        };
+      }
+
+      // ---------- VALIDATE PACKAGE ----------
       const packKey = pkg.split(":")[1];
-      const price = PRICES[packKey];
+      const pack = ARC_RAIDERS_PACKS[packKey];
 
-      if (!price) {
-        return { statusCode: 400, body: JSON.stringify({ error: "Unknown Arc Raiders pack." }) };
+      if (!pack) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: "Unknown Arc Raiders pack." }),
+        };
       }
 
-      amountCents = Math.round(price * 100);
+      // ---------- PRICE (SERVER AUTHORITY) ----------
+      amountCents = Math.round(pack.price * 100);
       productName = "TopDog Arc Raiders Boost";
-      productDesc = packKey.charAt(0).toUpperCase() + packKey.slice(1) + " Pack";
+      productDesc = pack.label;
       successPath = "/arcraiders/";
 
+      // ---------- QUOTE MODE ----------
       if (isQuote) {
         return {
           statusCode: 200,
           body: JSON.stringify({
             amountCents,
-            amount: price.toFixed(2),
+            amount: pack.price.toFixed(2),
             productName,
             productDesc,
           }),
@@ -332,6 +364,7 @@ exports.handler = async (event) => {
 
       break;
     }
+
 
 
       default:

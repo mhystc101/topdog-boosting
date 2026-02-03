@@ -8,11 +8,13 @@ function showBanner() {
 
   if (params.get("success") === "1") {
     const order = params.get("order") || "";
+    const discordUrl = "https://discord.gg/rF5d89mQRq";
     banner.className =
       "mb-6 rounded-2xl border border-emerald-700 bg-emerald-900/30 px-4 py-3";
     banner.innerHTML = `<div class="font-semibold">Payment received ✅</div>
-      <div class="text-sm text-slate-200 mt-1">Order ID: <span class="font-mono">${order}</span></div>
-      <div class="text-xs text-slate-300 mt-1">We’ll contact you on Discord soon.</div>`;
+      <div class="text-sm text-slate-200 mt-1">Your Ticket ID: <span class="font-mono font-semibold">${order}</span></div>
+      <div class="text-sm text-slate-200 mt-2">Join our Discord and open a support ticket with this ID so we can start your order.</div>
+      <a href="${discordUrl}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 mt-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold">Join Discord →</a>`;
     banner.classList.remove("hidden");
   } else if (params.get("canceled") === "1") {
     banner.className =

@@ -148,3 +148,56 @@ body{
   max-width: 1800px !important;
   width: 100% !important;
 }
+
+/* =========================
+   ANIMATIONS — small, impactful
+   ========================= */
+@keyframes td-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes td-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes td-pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+/* Stagger delays for sequential reveal */
+.td-animate-in {
+  animation: td-fade-in-up 0.5s ease-out forwards;
+}
+.td-animate-in-1 { animation-delay: 0.05s; opacity: 0; }
+.td-animate-in-2 { animation-delay: 0.15s; opacity: 0; }
+.td-animate-in-3 { animation-delay: 0.25s; opacity: 0; }
+.td-animate-in-4 { animation-delay: 0.35s; opacity: 0; }
+.td-animate-in-5 { animation-delay: 0.45s; opacity: 0; }
+.td-animate-in-6 { animation-delay: 0.55s; opacity: 0; }
+
+/* Hover lift for cards and buttons */
+.td-hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.td-hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Subtle pulse for live indicator */
+.td-pulse-soft {
+  animation: td-pulse-soft 2s ease-in-out infinite;
+}
+
+/* Smooth transitions for interactive elements */
+.td-transition {
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}

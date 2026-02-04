@@ -201,3 +201,7 @@ body{
 .td-transition {
   transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
+
+.td-hover-lift:hover {
+  transform: translateY(-2px);
+}

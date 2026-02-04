@@ -7,10 +7,7 @@
 
     <link rel="stylesheet" href="/assets/topdog.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    
-
   </head>
-  
 
   <body class="min-h-screen bg-slate-950 text-slate-100">
     <!-- Background glow -->
@@ -35,7 +32,7 @@
               <a href="/" class="rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-2 text-sm font-semibold">
                 Back
               </a>
-              <a href="https://discord.gg/rF5d89mQRq" target="_blank"
+              <a href="https://discord.gg/rF5d89mQRq" target="_blank" rel="noopener"
                  class="rounded-xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-2 text-sm font-semibold">
                 Open Ticket
               </a>
@@ -50,17 +47,75 @@
               Choose a pack, preview the price, and checkout through Stripe.
               After payment, you’ll receive an <strong>Order/Ticket ID</strong> — open a support ticket and include it to begin.
             </p>
+
             <div id="successBanner" class="hidden mt-6 rounded-2xl border border-emerald-700/40 bg-emerald-500/10 p-5">
-            <p class="text-sm font-semibold text-emerald-200">Payment successful ✅</p>
-            <p class="mt-2 text-sm text-slate-200">
+              <p class="text-sm font-semibold text-emerald-200">Payment successful ✅</p>
+              <p class="mt-2 text-sm text-slate-200">
                 Your Ticket ID: <span id="orderIdText" class="font-mono font-extrabold text-slate-50"></span>
-            </p>
-            <p class="mt-2 text-sm text-slate-300">
+              </p>
+              <p class="mt-2 text-sm text-slate-300">
                 Join our Discord and open a support ticket with this ID so we can start your order.
-            </p>
-            <a href="https://discord.gg/rF5d89mQRq" target="_blank" rel="noopener" class="inline-flex items-center gap-2 mt-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold">Join Discord →</a>
+              </p>
+              <a href="https://discord.gg/rF5d89mQRq" target="_blank" rel="noopener" class="inline-flex items-center gap-2 mt-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold">Join Discord →</a>
+            </div>
+          </div>
+
+          <!-- Stats strip (Arc Raiders version) -->
+          <div class="mt-6 grid gap-3 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4">
+              <p class="text-xs text-slate-400">AVG COMPLETION TIME</p>
+              <p class="text-lg font-bold mt-1">
+                <span
+                  data-countup="1"
+                  data-to="1"
+                  data-decimals="0"
+                  data-suffix=""
+                >0</span>
+                –
+                <span
+                  data-countup="1"
+                  data-to="3"
+                  data-decimals="0"
+                  data-suffix=""
+                >0</span>
+                days
+              </p>
+              <p class="text-xs text-slate-400 mt-1">Per starter pack</p>
             </div>
 
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4">
+              <p class="text-xs text-slate-400">UNBEATABLE START TIME</p>
+              <p
+                class="text-lg font-bold mt-1"
+                data-countup="1"
+                data-to="11"
+                data-decimals="0"
+                data-suffix=" min"
+              >
+                0 min
+              </p>
+              <p class="text-xs text-slate-400 mt-1">Average starting time</p>
+            </div>
+
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4">
+              <p class="text-xs text-slate-400">FAST COMPLETION</p>
+              <p
+                class="text-lg font-bold mt-1"
+                data-countup="1"
+                data-to="9"
+                data-decimals="0"
+                data-suffix=" hrs"
+              >
+                0 hrs
+              </p>
+              <p class="text-xs text-slate-400 mt-1">Active work per day avg</p>
+            </div>
+
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4">
+              <p class="text-xs text-slate-400">SUPPORT</p>
+              <p class="text-lg font-bold mt-1">Discord</p>
+              <p class="text-xs text-slate-400 mt-1">Fast responses</p>
+            </div>
           </div>
         </header>
 
@@ -142,13 +197,13 @@
                   Checkout
                 </button>
               </div>
+
               <p class="mt-3 text-xs text-slate-400">
                 By continuing, you agree to our
                 <a href="/terms/terms.html" class="underline underline-offset-4 hover:text-slate-200">Terms of Service</a>
                 and
                 <a href="/privacy/privacy.html" class="underline underline-offset-4 hover:text-slate-200">Privacy Policy</a>.
               </p>
-
             </div>
           </section>
 
@@ -170,30 +225,72 @@
         </div>
       </div>
     </div>
+
+    <!-- Footer (same as Rivals layout) -->
     <footer class="mt-10 text-xs text-slate-500">
-      <div class="rounded-2xl border border-slate-800 bg-slate-900/30 p-5">
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <p>© 2026 TopDog Boosting. All rights reserved.</p>
-          <div class="flex gap-4">
-            <a href="/terms/terms.html" class="hover:text-slate-300 underline underline-offset-4">Terms of Service</a>
-            <a href="/privacy/privacy.html" class="hover:text-slate-300 underline underline-offset-4">Privacy Policy</a>
+      <div class="mx-auto max-w-[1200px] px-6 lg:px-16 xl:px-24">
+        <div class="rounded-2xl border border-slate-800 bg-slate-900/30 p-5">
+          <div class="grid gap-6 md:grid-cols-3 text-center">
+            <!-- 1) Stripe receipt -->
+            <div>
+              <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/15 border border-indigo-700/40">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 14h6m-6-4h6m-7 11l-2 1V3l2 1 2-1 2 1 2-1 2 1 2-1v18l-2-1-2 1-2-1-2 1-2-1-2 1z" />
+                </svg>
+              </div>
+              <p class="text-slate-300 font-semibold">STRIPE RECEIPT INSTANTLY</p>
+              <p class="mt-2 text-slate-400 text-sm">You’ll get a confirmation Ticket ID after payment.</p>
+            </div>
+
+            <!-- 2) Open Discord ticket with ID -->
+            <div>
+              <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 border border-emerald-700/40">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 4h6a2 2 0 012 2v2a2 2 0 110 4v2a2 2 0 01-2 2H9a2 2 0 01-2-2v-2a2 2 0 110-4V6a2 2 0 012-2z" />
+                </svg>
+              </div>
+              <p class="text-slate-300 font-semibold">OPEN A DISCORD TICKET</p>
+              <p class="mt-2 text-slate-400 text-sm">Paste your Ticket ID so we can confirm + start your order.</p>
+            </div>
+
+            <!-- 3) Experienced team -->
+            <div>
+              <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/15 border border-sky-700/40">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m7 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p class="text-slate-300 font-semibold">EXPERIENCED TEAM ONLY</p>
+              <p class="mt-2 text-slate-400 text-sm">Orders are handled by vetted, reliable specialists.</p>
+            </div>
           </div>
+
+          <div class="mt-5 pt-5 border-t border-slate-800 text-slate-500 flex flex-col md:flex-row gap-2 md:items-center md:justify-between">
+            <p>© 2026 TopDog Boosting. All rights reserved.</p>
+            <div class="flex flex-wrap gap-4 justify-center md:justify-end">
+              <a href="/terms/terms.html" class="hover:text-slate-300 underline underline-offset-4">Terms of Service</a>
+              <a href="/privacy/privacy.html" class="hover:text-slate-300 underline underline-offset-4">Privacy Policy</a>
+              <a href="/" class="hover:text-slate-300 underline underline-offset-4">Back to Home</a>
+            </div>
+          </div>
+
+          <p class="mt-3 text-slate-600">
+            Payments are processed by Stripe. TopDog Boosting is an independent service provider and is not affiliated with, endorsed by,
+            or sponsored by any game publisher or developer. All game titles, in-game items, artwork,
+            and related materials are the property of their respective owners. All trademarks, service
+            marks, and logos displayed on this site are the property of their respective owners and are
+            used solely for identification and descriptive purposes.
+            “PlayStation”, “PS4”, “PS5”, and the PlayStation logos are trademarks or registered trademarks
+            of Sony Interactive Entertainment Inc. “Xbox”, the Xbox logo, and “Xbox Series X|S” are trademarks
+            of Microsoft Corporation. Other product and company names may be trademarks of their respective owners.
+          </p>
         </div>
-        <p class="mt-3 text-slate-600">
-          TopDog Boosting is an independent service provider and is not affiliated with, endorsed by,
-                or sponsored by any game publisher or developer. All game titles, in-game items, artwork,
-                and related materials are the property of their respective owners. All trademarks, service
-                marks, and logos displayed on this site are the property of their respective owners and are
-                used solely for identification and descriptive purposes.
-                “PlayStation”, “PS4”, “PS5”, and the PlayStation logos are trademarks or registered trademarks
-                of Sony Interactive Entertainment Inc. “Xbox”, the Xbox logo, and “Xbox Series X|S” are trademarks
-                of Microsoft Corporation. Other product and company names may be trademarks of their respective owners.
-        </p>
       </div>
     </footer>
 
     <script src="/arcraiders/app.js"></script>
-
-
   </body>
 </html>

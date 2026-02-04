@@ -1,5 +1,65 @@
 // /rocketleague/app.js
 
+// ================= Count-up Stats (top strip) =================
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function animateCountUp(el) {
+  if (!el || el.dataset.counted === "1") return;
+
+  const to = Number(el.dataset.to ?? "0");
+  const decimals = Number(el.dataset.decimals ?? "0");
+  const suffix = el.dataset.suffix ?? "";
+  const duration = Number(el.dataset.duration ?? "900");
+
+  if (!Number.isFinite(to)) return;
+
+  el.dataset.counted = "1";
+
+  const start = performance.now();
+  const from = 0;
+
+  function frame(now) {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = easeOutCubic(t);
+    const value = from + (to - from) * eased;
+
+    el.textContent = `${value.toFixed(decimals)}${suffix}`;
+
+    if (t < 1) requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+}
+
+function initCountUps() {
+  const els = Array.from(document.querySelectorAll('[data-countup="1"]'));
+  if (!els.length) return;
+
+  // If IntersectionObserver exists, trigger when visible (cleaner)
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            animateCountUp(entry.target);
+            io.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.35 }
+    );
+
+    els.forEach((el) => io.observe(el));
+    return;
+  }
+
+  // Fallback: just run immediately
+  els.forEach(animateCountUp);
+}
+
+
 // ================= Banner (success / canceled) =================
 function showBanner() {
   const params = new URLSearchParams(window.location.search);
@@ -235,6 +295,8 @@ function updatePreview() {
 // ================= Wiring / init =================
 function init() {
   showBanner();
+  initCountUps();
+
   populateRankFrom();
   populateRankToFiltered();
   setRankImages();

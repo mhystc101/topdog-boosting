@@ -24,9 +24,101 @@ function showBanner() {
     banner.classList.remove("hidden");
   }
 }
+// ================= Banner (success / canceled) =================
+function showBanner() {
+  const params = new URLSearchParams(window.location.search);
+  const banner = document.getElementById("banner");
+  if (!banner) return;
 
+  if (params.get("success") === "1") {
+    const order = params.get("order") || "";
+    const discordUrl = "https://discord.gg/rF5d89mQRq";
+    banner.className =
+      "mb-6 rounded-2xl border border-emerald-700 bg-emerald-900/30 px-4 py-3";
+    banner.innerHTML = `<div class="font-semibold">Payment received ✅</div>
+      <div class="text-sm text-slate-200 mt-1">Your Ticket ID: <span class="font-mono font-semibold">${order}</span></div>
+      <div class="text-sm text-slate-200 mt-2">Join our Discord and open a support ticket with this ID so we can start your order.</div>
+      <a href="${discordUrl}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 mt-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold">Join Discord →</a>`;
+    banner.classList.remove("hidden");
+  } else if (params.get("canceled") === "1") {
+    banner.className =
+      "mb-6 rounded-2xl border border-rose-700 bg-rose-900/30 px-4 py-3";
+    banner.innerHTML = `<div class="font-semibold">Checkout canceled</div>
+      <div class="text-sm text-slate-200 mt-1">No charge was made.</div>`;
+    banner.classList.remove("hidden");
+  }
+}
+
+/* ================= Count-up stats (runs once when visible) ================= */
+function initCountups() {
+  const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function formatNumber(value, decimals) {
+    const factor = Math.pow(10, decimals);
+    return (Math.round(value * factor) / factor).toFixed(decimals);
+  }
+
+  function animateCount(el, to, decimals, suffix, duration) {
+    if (prefersReducedMotion) {
+      el.textContent = formatNumber(to, decimals) + suffix;
+      return;
+    }
+
+    const start = 0;
+    const startTime = performance.now();
+
+    function tick(now) {
+      const t = Math.min(1, (now - startTime) / duration);
+      const eased = easeOutCubic(t);
+      const current = start + (to - start) * eased;
+      el.textContent = formatNumber(current, decimals) + suffix;
+
+      if (t < 1) requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  const statEls = Array.from(document.querySelectorAll("[data-countup='1']"));
+  if (!statEls.length) return;
+
+  // If IntersectionObserver isn't supported, just run immediately.
+  if (!("IntersectionObserver" in window)) {
+    statEls.forEach((el) => {
+      const to = parseFloat(el.getAttribute("data-to") || "0");
+      const decimals = parseInt(el.getAttribute("data-decimals") || "0", 10);
+      const suffix = el.getAttribute("data-suffix") || "";
+      animateCount(el, to, decimals, suffix, 900);
+    });
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+
+        const el = entry.target;
+        const to = parseFloat(el.getAttribute("data-to") || "0");
+        const decimals = parseInt(el.getAttribute("data-decimals") || "0", 10);
+        const suffix = el.getAttribute("data-suffix") || "";
+        animateCount(el, to, decimals, suffix, 900);
+
+        obs.unobserve(el); // run once
+      }
+    },
+    { threshold: 0.6 }
+  );
+
+  statEls.forEach((el) => observer.observe(el));
+}
 // ================= Game Config =================
 const GAME_KEY = "rivals";
+
 
 // Tiers with divisions 3/2/1
 const DIVISION_TIERS = [
@@ -234,7 +326,8 @@ async function updatePreview() {
 // ================= Wiring / init =================
 function init() {
   showBanner();
-
+  initCountups();
+  
   populateRankFrom();
   populateRankToFiltered();
 

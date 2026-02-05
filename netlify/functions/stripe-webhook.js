@@ -8,12 +8,17 @@ async function getFetch() {
   return mod.default;
 }
 
-async function postToDiscord(payload) {
-  const url = process.env.DISCORD_WEBHOOK_URL;
-  if (!url) {
-    console.error("Missing DISCORD_WEBHOOK_URL");
-    return;
-  }
+function money(n) {
+  return (Math.round(Number(n) * 100) / 100).toFixed(2);
+}
+
+function boosterPay(amountDollars) {
+  // boosters get 70% (you keep 30% internally)
+  return money(Number(amountDollars) * 0.7);
+}
+
+async function postToDiscord(url, payload) {
+  if (!url) return;
 
   const _fetch = await getFetch();
   const res = await _fetch(url, {
@@ -27,6 +32,56 @@ async function postToDiscord(payload) {
     console.error("Discord webhook failed:", res.status, text);
   }
 }
+
+// --- Your existing OWNER webhook (admin/orders channel)
+async function postToOwner(payload) {
+  const url = process.env.DISCORD_WEBHOOK_URL;
+  if (!url) {
+    console.error("Missing DISCORD_WEBHOOK_URL");
+    return;
+  }
+  await postToDiscord(url, payload);
+}
+
+// --- NEW: Booster webhook (single channel for all games)
+async function postToBoosters(payload) {
+  const url = process.env.DISCORD_BOOSTER_WEBHOOK_URL;
+  if (!url) {
+    console.error("Missing DISCORD_BOOSTER_WEBHOOK_URL");
+    return;
+  }
+  await postToDiscord(url, payload);
+}
+
+async function postToBoosterChannel(payload) {
+  const channelId = process.env.BOOSTER_CHANNEL_ID;
+  const token = process.env.DISCORD_BOT_TOKEN;
+
+  if (!channelId) {
+    console.error("Missing BOOSTER_CHANNEL_ID");
+    return;
+  }
+  if (!token) {
+    console.error("Missing DISCORD_BOT_TOKEN");
+    return;
+  }
+
+  const _fetch = await getFetch();
+  const res = await _fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bot ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    console.error("Booster channel post failed:", res.status, text);
+  }
+}
+
 
 // ---- Anti-fraud memory (temporary, resets on cold start) ----
 const processedOrders = new Set();
@@ -116,7 +171,8 @@ exports.handler = async (event) => {
 
       const paid = (session.amount_total ?? 0) / 100;
 
-      await postToDiscord({
+      // ===================== 1) OWNER / ADMIN MESSAGE (unchanged) =====================
+      await postToOwner({
         embeds: [
           {
             title: "✅ New Paid Order",
@@ -152,6 +208,51 @@ exports.handler = async (event) => {
           },
         ],
       });
+
+      // ===================== 2) BOOSTER MESSAGE (NEW, CLEAN) =====================
+      // No email, no stripe ids/links, no fraud flags.
+      // Shows booster pay (70%) but doesn't mention your cut.
+      await postToBoosterChannel({
+        content: `🧾 **New Job** • **${String(md.game || "UNKNOWN").toUpperCase()}**`,
+        embeds: [
+          {
+            title: `Claimable Job • ${orderId}`,
+            description: `**Booster Pay:** $${boosterPay(paid)}`,
+            color: 0x5865f2,
+            fields: [
+              { name: "Order ID", value: orderId, inline: false },
+
+              { name: "Discord", value: md.discord || "UNKNOWN", inline: true },
+              { name: "Platform", value: md.platform || "UNKNOWN", inline: true },
+              { name: "Region", value: md.region || "UNKNOWN", inline: true },
+
+              { name: "In-game", value: md.ign || "UNKNOWN", inline: false },
+
+              ...(md.rank_from || md.rank_to
+                ? [
+                    { name: "Rank From", value: md.rank_from || "N/A", inline: true },
+                    { name: "Rank To", value: md.rank_to || "N/A", inline: true },
+                  ]
+                : []),
+
+              { name: "Package", value: md.package || "UNKNOWN", inline: false },
+              { name: "Add-ons", value: addons.length ? addons.join(", ") : "None", inline: false },
+              { name: "Notes", value: (md.notes || "").trim() || "None", inline: false },
+            ],
+            footer: { text: "First come first serve — click Claim to lock." },
+          },
+        ],
+        components: [
+          {
+            type: 1,
+            components: [
+              { type: 2, style: 3, label: "Claim", custom_id: `claim:${orderId}` },
+              { type: 2, style: 2, label: "Log", custom_id: `log:${orderId}` },
+            ],
+          },
+        ],
+      });
+
     }
 
     return { statusCode: 200, body: "ok" };

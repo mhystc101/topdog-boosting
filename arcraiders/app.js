@@ -1,3 +1,4 @@
+// /arcraiders/app.js
 (() => {
   const API = "/api/create-checkout";
   const el = (id) => document.getElementById(id);
@@ -14,7 +15,7 @@
       ],
     },
     advanced: {
-      title: "🔵 Advanced ",
+      title: "🔵 Advanced",
       bullets: [
         "Level 20 • 20 Skill Points",
         "All Benches L2 • Scrappy L2",
@@ -25,7 +26,7 @@
       ],
     },
     epic: {
-      title: "🟣 Epic ",
+      title: "🟣 Epic",
       bullets: [
         "Level 25 • 25 Skill Points",
         "Refiner L2 • Other Benches L3 • Scrappy L3",
@@ -36,7 +37,7 @@
       ],
     },
     legendary: {
-      title: "🟡 Legendary ",
+      title: "🟡 Legendary",
       bullets: [
         "Level 37 • Final skill perk unlocked",
         "All Benches L3 • Scrappy L5",
@@ -49,9 +50,12 @@
   };
 
   function renderPackDetails(key) {
+    const wrap = el("packDetails");
+    if (!wrap) return;
+
     const pack = PACKS[key];
     if (!pack) {
-      el("packDetails").innerHTML = `
+      wrap.innerHTML = `
         <div class="rounded-xl border border-slate-800 bg-slate-950/40 p-4">
           <p class="text-sm text-slate-300">Pick a pack to see details.</p>
         </div>
@@ -59,7 +63,7 @@
       return;
     }
 
-    el("packDetails").innerHTML = `
+    wrap.innerHTML = `
       <div class="rounded-xl border border-slate-800 bg-slate-950/40 p-4">
         <p class="text-sm font-semibold">${pack.title}</p>
         <ul class="mt-3 space-y-2 text-sm text-slate-300">
@@ -81,105 +85,103 @@
     const params = new URLSearchParams(window.location.search);
     const success = params.get("success");
     const order = params.get("order");
+    if (success !== "1" || !order) return;
 
-    if (success === "1" && order) {
-      const banner = el("successBanner");
-      const orderText = el("orderIdText");
-      if (banner && orderText) {
-        orderText.textContent = order;
-        banner.classList.remove("hidden");
-        banner.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
+    const banner = el("successBanner");
+    const orderText = el("orderIdText");
+    if (!banner || !orderText) return;
+
+    orderText.textContent = order;
+    banner.classList.remove("hidden");
+    banner.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-function payload(quote) {
-  const packVal = el("pack").value;
+  function payload(quote) {
+    const packVal = el("pack")?.value || "";
 
-  // quote payload should be minimal so it doesn't fail required field validation
-  if (quote) {
+    // quote payload minimal
+    if (quote) {
+      return {
+        game: "arcraiders",
+        quote: true,
+        package: `arcraiders:${packVal}`,
+      };
+    }
+
+    // checkout payload full
     return {
       game: "arcraiders",
-      quote: true,
+      quote: false,
       package: `arcraiders:${packVal}`,
+      discord: el("discord")?.value?.trim() || "",
+      ign: el("ign")?.value?.trim() || "",
+      platform: el("platform")?.value || "",
+      region: el("region")?.value || "",
+      notes: el("notes")?.value?.trim() || "",
     };
   }
 
-  // checkout payload includes everything
-  return {
-    game: "arcraiders",
-    quote: false,
-    package: `arcraiders:${packVal}`,
-    discord: el("discord").value.trim(),
-    ign: el("ign").value.trim(),
-    platform: el("platform").value,
-    region: el("region").value,
-    notes: el("notes").value.trim(),
-  };
-}
-
-
   // ================= Count-up Stats (top strip) =================
-function easeOutCubic(t) {
-  return 1 - Math.pow(1 - t, 3);
-}
-
-function animateCountUp(el) {
-  if (!el || el.dataset.counted === "1") return;
-
-  const to = Number(el.dataset.to ?? "0");
-  const decimals = Number(el.dataset.decimals ?? "0");
-  const suffix = el.dataset.suffix ?? "";
-  const duration = Number(el.dataset.duration ?? "900");
-
-  if (!Number.isFinite(to)) return;
-
-  el.dataset.counted = "1";
-
-  const start = performance.now();
-  const from = 0;
-
-  function frame(now) {
-    const t = Math.min(1, (now - start) / duration);
-    const eased = easeOutCubic(t);
-    const value = from + (to - from) * eased;
-
-    el.textContent = `${value.toFixed(decimals)}${suffix}`;
-
-    if (t < 1) requestAnimationFrame(frame);
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
   }
 
-  requestAnimationFrame(frame);
-}
+  function animateCountUp(node) {
+    if (!node || node.dataset.counted === "1") return;
 
-function initCountUps() {
-  const els = Array.from(document.querySelectorAll('[data-countup="1"]'));
-  if (!els.length) return;
+    const to = Number(node.dataset.to ?? "0");
+    const decimals = Number(node.dataset.decimals ?? "0");
+    const suffix = node.dataset.suffix ?? "";
+    const duration = Number(node.dataset.duration ?? "900");
+    if (!Number.isFinite(to)) return;
 
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            animateCountUp(entry.target);
-            io.unobserve(entry.target);
+    node.dataset.counted = "1";
+
+    const start = performance.now();
+    const from = 0;
+
+    function frame(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = easeOutCubic(t);
+      const value = from + (to - from) * eased;
+
+      node.textContent = `${value.toFixed(decimals)}${suffix}`;
+      if (t < 1) requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  function initCountUps() {
+    const els = Array.from(document.querySelectorAll('[data-countup="1"]'));
+    if (!els.length) return;
+
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              animateCountUp(entry.target);
+              io.unobserve(entry.target);
+            }
           }
-        }
-      },
-      { threshold: 0.35 }
-    );
+        },
+        { threshold: 0.35 }
+      );
 
-    els.forEach((el) => io.observe(el));
-    return;
+      els.forEach((n) => io.observe(n));
+      return;
+    }
+
+    els.forEach(animateCountUp);
   }
-
-  els.forEach(animateCountUp);
-}
 
   async function preview() {
-    if (!el("pack").value) return;
+    const packVal = el("pack")?.value;
+    const priceEl = el("pricePreview");
+    if (!packVal || !priceEl) return;
 
-    el("pricePreview").textContent = "Calculating…";
+    priceEl.textContent = "Calculating…";
 
     try {
       const r = await fetch(API, {
@@ -189,17 +191,18 @@ function initCountUps() {
       });
 
       const d = await r.json();
-      el("pricePreview").innerHTML = r.ok
+      priceEl.innerHTML = r.ok
         ? `<div class="text-xl font-extrabold">$${d.amount}</div>`
         : `<span class="text-red-400">${d.error || "Quote failed"}</span>`;
     } catch {
-      el("pricePreview").innerHTML = `<span class="text-red-400">Network error</span>`;
+      priceEl.innerHTML = `<span class="text-red-400">Network error</span>`;
     }
   }
 
   async function checkout() {
     for (const f of ["pack", "discord", "ign", "platform", "region"]) {
-      if (!el(f).value) return alert("Please complete all required fields.");
+      const node = el(f);
+      if (!node || !node.value) return alert("Please complete all required fields.");
     }
 
     try {
@@ -224,14 +227,14 @@ function initCountUps() {
   document.addEventListener("DOMContentLoaded", () => {
     renderPackDetails("");
     showSuccessIfPresent();
-    initCountUps()
+    initCountUps();
 
-    el("pack").addEventListener("change", () => {
-      renderPackDetails(el("pack").value);
+    el("pack")?.addEventListener("change", () => {
+      renderPackDetails(el("pack")?.value || "");
       preview();
     });
 
-    el("previewBtn").addEventListener("click", preview);
-    el("checkoutBtn").addEventListener("click", checkout);
+    // No preview button in HTML, so DO NOT bind it
+    el("checkoutBtn")?.addEventListener("click", checkout);
   });
 })();

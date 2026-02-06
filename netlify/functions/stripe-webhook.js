@@ -17,6 +17,20 @@ function boosterPay(amountDollars) {
   return money(Number(amountDollars) * 0.7);
 }
 
+// ---------- Discord limits helpers ----------
+function truncate(str, max) {
+  const s = String(str ?? "");
+  if (s.length <= max) return s;
+  return s.slice(0, Math.max(0, max - 1)) + "…";
+}
+
+// Discord field values max 1024 chars
+function fieldValue(str) {
+  const cleaned = String(str ?? "").trim();
+  return truncate(cleaned || "None", 1024);
+}
+
+// ---------- Discord posting ----------
 async function postToDiscord(url, payload) {
   if (!url) return;
 
@@ -43,7 +57,7 @@ async function postToOwner(payload) {
   await postToDiscord(url, payload);
 }
 
-// --- NEW: Booster webhook (single channel for all games)
+// --- Booster webhook (optional, if you ever switch away from bot posting)
 async function postToBoosters(payload) {
   const url = process.env.DISCORD_BOOSTER_WEBHOOK_URL;
   if (!url) {
@@ -53,6 +67,7 @@ async function postToBoosters(payload) {
   await postToDiscord(url, payload);
 }
 
+// --- Bot-post directly to a channel (what you're using now)
 async function postToBoosterChannel(payload) {
   const channelId = process.env.BOOSTER_CHANNEL_ID;
   const token = process.env.DISCORD_BOT_TOKEN;
@@ -82,6 +97,44 @@ async function postToBoosterChannel(payload) {
   }
 }
 
+// --------- Stateless idempotency via Discord history ---------
+// If a booster job message already exists in the booster channel
+// with footer containing `Session: <sessionId>`, we skip posting.
+async function boosterJobAlreadyPosted(sessionId) {
+  const channelId = process.env.BOOSTER_CHANNEL_ID;
+  const token = process.env.DISCORD_BOT_TOKEN;
+
+  if (!channelId || !token) return false;
+
+  const _fetch = await getFetch();
+  const res = await _fetch(
+    `https://discord.com/api/v10/channels/${channelId}/messages?limit=50`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bot ${token}` },
+    }
+  );
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    console.error("Failed to read booster channel messages:", res.status, text);
+    return false; // fail open (don't block jobs if Discord read fails)
+  }
+
+  const msgs = await res.json().catch(() => []);
+  const needle = `Session: ${sessionId}`;
+
+  for (const m of msgs) {
+    const embeds = Array.isArray(m.embeds) ? m.embeds : [];
+    for (const e of embeds) {
+      const footerText = e?.footer?.text || "";
+      if (typeof footerText === "string" && footerText.includes(needle)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 // ---- Anti-fraud memory (temporary, resets on cold start) ----
 const processedOrders = new Set();
@@ -137,8 +190,7 @@ exports.handler = async (event) => {
       // ---- Burner email detection ----
       const blockedDomains = ["tempmail", "10minutemail", "mailinator", "guerrillamail", "yopmail"];
       const isBurnerEmail =
-        email !== "UNKNOWN" &&
-        blockedDomains.some((d) => email.toLowerCase().includes(d));
+        email !== "UNKNOWN" && blockedDomains.some((d) => email.toLowerCase().includes(d));
 
       const fraudFlags = [];
       if (isBurnerEmail) fraudFlags.push("Burner Email");
@@ -149,14 +201,20 @@ exports.handler = async (event) => {
       const mdPI = session.payment_intent?.metadata || {};
       const md = { ...mdPI, ...mdSession };
 
-      console.log("Stripe session id:", session.id);
-      console.log("Merged metadata:", md);
+      const paid = (session.amount_total ?? 0) / 100;
 
-      const orderId = md.order_id || session.client_reference_id || "UNKNOWN";
+      // orderId fallback (never UNKNOWN)
+      const sessionShort = String(session.id || "").slice(-8).toUpperCase();
+      const yyyymmdd = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+      let orderId = md.order_id || session.client_reference_id || "";
+      orderId = String(orderId || "").trim();
+      if (!orderId || orderId.toUpperCase() === "UNKNOWN") {
+        orderId = `TD-${yyyymmdd}-${sessionShort || "XXXX"}`;
+      }
 
-      // ---- Duplicate order protection ----
+      // ---- Duplicate order protection (memory fast-path) ----
       if (processedOrders.has(orderId)) {
-        console.warn("Duplicate order blocked:", orderId);
+        console.warn("Duplicate order blocked (memory):", orderId);
         return { statusCode: 200, body: "duplicate ignored" };
       }
       processedOrders.add(orderId);
@@ -169,77 +227,89 @@ exports.handler = async (event) => {
       }
       if (md.addon_low_rr === "true") addons.push("Low RR Gain");
 
-      const paid = (session.amount_total ?? 0) / 100;
-
-      // ===================== 1) OWNER / ADMIN MESSAGE (unchanged) =====================
+      // ===================== 1) OWNER / ADMIN MESSAGE (same info, safer) =====================
       await postToOwner({
         embeds: [
           {
-            title: "✅ New Paid Order",
-            description: `**Order ID:** ${orderId}`,
+            title: truncate("✅ New Paid Order", 256),
+            description: truncate(`**Order ID:** ${orderId}`, 4096),
             color: fraudFlags.length ? 0xf1c40f : 0x2ecc71,
             fields: [
-              { name: "Game", value: md.game || "UNKNOWN", inline: true },
-              { name: "Paid", value: `$${paid.toFixed(2)}`, inline: true },
-              { name: "Email", value: email, inline: false },
+              { name: "Game", value: fieldValue(md.game || "UNKNOWN"), inline: true },
+              { name: "Paid", value: fieldValue(`$${paid.toFixed(2)}`), inline: true },
+              { name: "Email", value: fieldValue(email), inline: false },
 
-              { name: "Discord", value: md.discord || "UNKNOWN", inline: true },
-              { name: "Platform", value: md.platform || "UNKNOWN", inline: true },
-              { name: "Region", value: md.region || "UNKNOWN", inline: true },
+              { name: "Discord", value: fieldValue(md.discord || "UNKNOWN"), inline: true },
+              { name: "Platform", value: fieldValue(md.platform || "UNKNOWN"), inline: true },
+              { name: "Region", value: fieldValue(md.region || "UNKNOWN"), inline: true },
 
-              { name: "In-game", value: md.ign || "UNKNOWN", inline: false },
-              { name: "Rank From", value: md.rank_from || "N/A", inline: true },
-              { name: "Rank To", value: md.rank_to || "N/A", inline: true },
+              { name: "In-game", value: fieldValue(md.ign || "UNKNOWN"), inline: false },
+              { name: "Rank From", value: fieldValue(md.rank_from || "N/A"), inline: true },
+              { name: "Rank To", value: fieldValue(md.rank_to || "N/A"), inline: true },
 
-              { name: "Package", value: md.package || "UNKNOWN", inline: false },
-              { name: "Add-ons", value: addons.length ? addons.join(", ") : "None", inline: false },
-              { name: "Notes", value: (md.notes || "").trim() || "None", inline: false },
+              { name: "Package", value: fieldValue(md.package || "UNKNOWN"), inline: false },
+              { name: "Add-ons", value: fieldValue(addons.length ? addons.join(", ") : "None"), inline: false },
+              { name: "Notes", value: fieldValue(md.notes || "None"), inline: false },
 
-              { name: "Stripe Session", value: session.id, inline: false },
+              { name: "Stripe Session", value: fieldValue(session.id), inline: false },
               {
                 name: "Stripe Dashboard",
-                value: session.payment_intent
-                  ? `https://dashboard.stripe.com/payments/${session.payment_intent.id || session.payment_intent}`
-                  : "N/A",
+                value: fieldValue(
+                  session.payment_intent
+                    ? `https://dashboard.stripe.com/payments/${session.payment_intent.id || session.payment_intent}`
+                    : "N/A"
+                ),
                 inline: false,
               },
-              { name: "Fraud Flags", value: fraudFlags.length ? fraudFlags.join(", ") : "None", inline: false },
+              {
+                name: "Fraud Flags",
+                value: fieldValue(fraudFlags.length ? fraudFlags.join(", ") : "None"),
+                inline: false,
+              },
             ],
           },
         ],
       });
 
-      // ===================== 2) BOOSTER MESSAGE (NEW, CLEAN) =====================
-      // No email, no stripe ids/links, no fraud flags.
-      // Shows booster pay (70%) but doesn't mention your cut.
+      // ===================== 2) BOOSTER MESSAGE (CLEAN + DEDUPED) =====================
+      // Stateless dedupe: check Discord history for Session: <sessionId>
+      const alreadyPosted = await boosterJobAlreadyPosted(session.id);
+      if (alreadyPosted) {
+        console.warn("Duplicate booster job skipped (discord dedupe):", session.id, orderId);
+        return { statusCode: 200, body: "duplicate booster ignored" };
+      }
+
       await postToBoosterChannel({
-        content: `🧾 **New Job** • **${String(md.game || "UNKNOWN").toUpperCase()}**`,
+        content: `🧾 **New Job** • **${truncate(String(md.game || "UNKNOWN").toUpperCase(), 100)}**`,
         embeds: [
           {
-            title: `Claimable Job • ${orderId}`,
-            description: `**Booster Pay:** $${boosterPay(paid)}`,
+            title: truncate(`Claimable Job • ${orderId}`, 256),
+            description: truncate(`**Booster Pay:** $${boosterPay(paid)}`, 4096),
             color: 0x5865f2,
             fields: [
-              { name: "Order ID", value: orderId, inline: false },
+              { name: "Order ID", value: fieldValue(orderId), inline: false },
 
-              { name: "Discord", value: md.discord || "UNKNOWN", inline: true },
-              { name: "Platform", value: md.platform || "UNKNOWN", inline: true },
-              { name: "Region", value: md.region || "UNKNOWN", inline: true },
+              { name: "Discord", value: fieldValue(md.discord || "UNKNOWN"), inline: true },
+              { name: "Platform", value: fieldValue(md.platform || "UNKNOWN"), inline: true },
+              { name: "Region", value: fieldValue(md.region || "UNKNOWN"), inline: true },
 
-              { name: "In-game", value: md.ign || "UNKNOWN", inline: false },
+              { name: "In-game", value: fieldValue(md.ign || "UNKNOWN"), inline: false },
 
               ...(md.rank_from || md.rank_to
                 ? [
-                    { name: "Rank From", value: md.rank_from || "N/A", inline: true },
-                    { name: "Rank To", value: md.rank_to || "N/A", inline: true },
+                    { name: "Rank From", value: fieldValue(md.rank_from || "N/A"), inline: true },
+                    { name: "Rank To", value: fieldValue(md.rank_to || "N/A"), inline: true },
                   ]
                 : []),
 
-              { name: "Package", value: md.package || "UNKNOWN", inline: false },
-              { name: "Add-ons", value: addons.length ? addons.join(", ") : "None", inline: false },
-              { name: "Notes", value: (md.notes || "").trim() || "None", inline: false },
+              { name: "Package", value: fieldValue(md.package || "UNKNOWN"), inline: false },
+              { name: "Add-ons", value: fieldValue(addons.length ? addons.join(", ") : "None"), inline: false },
+              { name: "Notes", value: fieldValue(md.notes || "None"), inline: false },
             ],
-            footer: { text: "First come first serve — click Claim to lock." },
+            footer: {
+              // This is the key: dedupe marker lives in Discord.
+              text: truncate(`First come first serve — click Claim to lock. | Session: ${session.id}`, 2048),
+            },
           },
         ],
         components: [
@@ -252,7 +322,6 @@ exports.handler = async (event) => {
           },
         ],
       });
-
     }
 
     return { statusCode: 200, body: "ok" };

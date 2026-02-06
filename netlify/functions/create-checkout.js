@@ -302,68 +302,71 @@ exports.handler = async (event) => {
       }
 
       case "arcraiders": {
-      // ---------- REQUIRED FIELDS ----------
-      if (!pkg || !pkg.startsWith("arcraiders:")) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: "Invalid Arc Raiders package." }),
-        };
+        // Use unified package value (supports pkg or pack alias)
+        if (!finalPkg || !finalPkg.startsWith("arcraiders:")) {
+          return {
+            statusCode: 400,
+            body: JSON.stringify({ error: "Invalid Arc Raiders package." }),
+          };
+        }
+
+        // ---------- VALIDATE PACKAGE ----------
+        const packKey = finalPkg.split(":")[1];
+        const pack = ARC_RAIDERS_PACKS[packKey];
+
+        if (!pack) {
+          return {
+            statusCode: 400,
+            body: JSON.stringify({ error: "Unknown Arc Raiders pack." }),
+          };
+        }
+
+        // ---------- PRICE (SERVER AUTHORITY) ----------
+        amountCents = Math.round(pack.price * 100);
+        productName = "TopDog Arc Raiders Boost";
+        productDesc = pack.label;
+        successPath = "/arcraiders/";
+
+        // ---------- QUOTE MODE ----------
+        // Quote should only require game + package
+        if (isQuote) {
+          return {
+            statusCode: 200,
+            body: JSON.stringify({
+              amountCents,
+              amount: pack.price.toFixed(2),
+              productName,
+              productDesc,
+            }),
+          };
+        }
+
+        // ---------- REQUIRED FIELDS (CHECKOUT ONLY) ----------
+        if (!platform || !region || !discord || !ign) {
+          return {
+            statusCode: 400,
+            body: JSON.stringify({ error: "Missing required fields." }),
+          };
+        }
+
+        // ---------- VALIDATE PLATFORM / REGION ----------
+        if (!ARC_RAIDERS_PLATFORMS.includes(platform)) {
+          return {
+            statusCode: 400,
+            body: JSON.stringify({ error: "Invalid platform." }),
+          };
+        }
+
+        if (!ARC_RAIDERS_REGIONS.includes(region)) {
+          return {
+            statusCode: 400,
+            body: JSON.stringify({ error: "Invalid region." }),
+          };
+        }
+
+        break;
       }
 
-      if (!platform || !region || !discord || !ign) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: "Missing required fields." }),
-        };
-      }
-
-      // ---------- VALIDATE PLATFORM / REGION ----------
-      if (!ARC_RAIDERS_PLATFORMS.includes(platform)) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: "Invalid platform." }),
-        };
-      }
-
-      if (!ARC_RAIDERS_REGIONS.includes(region)) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: "Invalid region." }),
-        };
-      }
-
-      // ---------- VALIDATE PACKAGE ----------
-      const packKey = pkg.split(":")[1];
-      const pack = ARC_RAIDERS_PACKS[packKey];
-
-      if (!pack) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: "Unknown Arc Raiders pack." }),
-        };
-      }
-
-      // ---------- PRICE (SERVER AUTHORITY) ----------
-      amountCents = Math.round(pack.price * 100);
-      productName = "TopDog Arc Raiders Boost";
-      productDesc = pack.label;
-      successPath = "/arcraiders/";
-
-      // ---------- QUOTE MODE ----------
-      if (isQuote) {
-        return {
-          statusCode: 200,
-          body: JSON.stringify({
-            amountCents,
-            amount: pack.price.toFixed(2),
-            productName,
-            productDesc,
-          }),
-        };
-      }
-
-      break;
-    }
 
 
 

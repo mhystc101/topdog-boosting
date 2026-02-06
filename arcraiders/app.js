@@ -4,7 +4,7 @@
 
   const PACKS = {
     starter: {
-      title: "🟢 Starter — $42",
+      title: "🟢 Starter",
       bullets: [
         "Level 15 • 15 Skill Points",
         "All Benches L1 • Scrappy L2",
@@ -14,7 +14,7 @@
       ],
     },
     advanced: {
-      title: "🔵 Advanced — $115",
+      title: "🔵 Advanced ",
       bullets: [
         "Level 20 • 20 Skill Points",
         "All Benches L2 • Scrappy L2",
@@ -25,7 +25,7 @@
       ],
     },
     epic: {
-      title: "🟣 Epic — $235",
+      title: "🟣 Epic ",
       bullets: [
         "Level 25 • 25 Skill Points",
         "Refiner L2 • Other Benches L3 • Scrappy L3",
@@ -36,7 +36,7 @@
       ],
     },
     legendary: {
-      title: "🟡 Legendary — $450",
+      title: "🟡 Legendary ",
       bullets: [
         "Level 37 • Final skill perk unlocked",
         "All Benches L3 • Scrappy L5",
@@ -93,18 +93,31 @@
     }
   }
 
-  function payload(quote) {
+function payload(quote) {
+  const packVal = el("pack").value;
+
+  // quote payload should be minimal so it doesn't fail required field validation
+  if (quote) {
     return {
       game: "arcraiders",
-      quote: !!quote,
-      package: `arcraiders:${el("pack").value}`,
-      discord: el("discord").value.trim(),
-      ign: el("ign").value.trim(),
-      platform: el("platform").value,
-      region: el("region").value,
-      notes: el("notes").value.trim(),
+      quote: true,
+      package: `arcraiders:${packVal}`,
     };
   }
+
+  // checkout payload includes everything
+  return {
+    game: "arcraiders",
+    quote: false,
+    package: `arcraiders:${packVal}`,
+    discord: el("discord").value.trim(),
+    ign: el("ign").value.trim(),
+    platform: el("platform").value,
+    region: el("region").value,
+    notes: el("notes").value.trim(),
+  };
+}
+
 
   // ================= Count-up Stats (top strip) =================
 function easeOutCubic(t) {

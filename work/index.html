@@ -31,6 +31,12 @@
                 TopDog <span class="text-indigo-400">Boosting</span>
               </div>
             </a>
+            <div class="mt-6 flex items-center gap-2 text-xs text-slate-400">
+              <a href="/" class="hover:text-slate-200 underline underline-offset-4">Home</a>
+              <span>•</span>
+              <span>Work for Us</span>
+            </div>
+            
 
             <div class="flex items-center gap-3">
               <a
@@ -124,6 +130,11 @@
         </section>
 
         <!-- Forms (HIDDEN until clicked) -->
+        <div id="roleBanner" class="hidden mt-8 rounded-2xl border border-slate-800 bg-slate-900/50 px-5 py-4">
+          <p class="font-semibold">Application opened</p>
+          <p id="roleBannerText" class="text-sm text-slate-300 mt-1"></p>
+        </div>
+        
         <div class="mt-10 grid gap-6 lg:grid-cols-2 items-start">
           <!-- Affiliate form -->
           <section id="affiliateForm" class="hidden rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
@@ -229,6 +240,8 @@
                 of Microsoft Corporation. Other product and company names may be trademarks of their respective owners.</p>
             </div>
           </div>
+          <a href="/work/" class="hover:text-slate-300 underline underline-offset-4">Work for Us</a>
+
         </footer>
       </div>
     </div>
@@ -238,25 +251,33 @@
       (() => {
         const affiliateBtn = document.getElementById("openAffiliate");
         const boosterBtn = document.getElementById("openBooster");
-
+    
         const affiliateForm = document.getElementById("affiliateForm");
         const boosterForm = document.getElementById("boosterForm");
-
-        function show(formToShow) {
+    
+        const roleBanner = document.getElementById("roleBanner");
+        const roleBannerText = document.getElementById("roleBannerText");
+    
+        if (!affiliateBtn || !boosterBtn || !affiliateForm || !boosterForm) return;
+    
+        function show(formToShow, label) {
           affiliateForm.classList.add("hidden");
           boosterForm.classList.add("hidden");
-
+    
           formToShow.classList.remove("hidden");
-
-          formToShow.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
+    
+          if (roleBanner && roleBannerText) {
+            roleBanner.classList.remove("hidden");
+            roleBannerText.textContent = `You selected: ${label}. Fill this out and we’ll review it in Discord.`;
+          }
+    
+          formToShow.scrollIntoView({ behavior: "smooth", block: "start" });
         }
-
-        affiliateBtn.addEventListener("click", () => show(affiliateForm));
-        boosterBtn.addEventListener("click", () => show(boosterForm));
+    
+        affiliateBtn.addEventListener("click", () => show(affiliateForm, "Affiliate"));
+        boosterBtn.addEventListener("click", () => show(boosterForm, "Booster"));
       })();
     </script>
+    
   </body>
 </html>

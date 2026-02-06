@@ -1,6 +1,6 @@
 // /rivals/app.js
 
-// ================= Banner (success / canceled) =================
+// ================= Banner (success / canceled) + Copy =================
 function showBanner() {
   const params = new URLSearchParams(window.location.search);
   const banner = document.getElementById("banner");
@@ -11,35 +11,32 @@ function showBanner() {
     const discordUrl = "https://discord.gg/rF5d89mQRq";
     banner.className =
       "mb-6 rounded-2xl border border-emerald-700 bg-emerald-900/30 px-4 py-3";
-    banner.innerHTML = `<div class="font-semibold">Payment received ✅</div>
-      <div class="text-sm text-slate-200 mt-1">Your Ticket ID: <span class="font-mono font-semibold">${order}</span></div>
-      <div class="text-sm text-slate-200 mt-2">Join our Discord and open a support ticket with this ID so we can start your order.</div>
-      <a href="${discordUrl}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 mt-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold">Join Discord →</a>`;
-    banner.classList.remove("hidden");
-  } else if (params.get("canceled") === "1") {
-    banner.className =
-      "mb-6 rounded-2xl border border-rose-700 bg-rose-900/30 px-4 py-3";
-    banner.innerHTML = `<div class="font-semibold">Checkout canceled</div>
-      <div class="text-sm text-slate-200 mt-1">No charge was made.</div>`;
-    banner.classList.remove("hidden");
-  }
-}
-// ================= Banner (success / canceled) =================
-function showBanner() {
-  const params = new URLSearchParams(window.location.search);
-  const banner = document.getElementById("banner");
-  if (!banner) return;
 
-  if (params.get("success") === "1") {
-    const order = params.get("order") || "";
-    const discordUrl = "https://discord.gg/rF5d89mQRq";
-    banner.className =
-      "mb-6 rounded-2xl border border-emerald-700 bg-emerald-900/30 px-4 py-3";
     banner.innerHTML = `<div class="font-semibold">Payment received ✅</div>
-      <div class="text-sm text-slate-200 mt-1">Your Ticket ID: <span class="font-mono font-semibold">${order}</span></div>
+      <div class="text-sm text-slate-200 mt-1">
+        Your Ticket ID:
+        <span class="font-mono font-semibold" id="orderIdText">${order}</span>
+        <button id="copyOrderBtn" class="ml-2 rounded-lg border border-slate-700 bg-slate-900/60 px-2 py-1 text-xs hover:bg-slate-800">Copy</button>
+      </div>
       <div class="text-sm text-slate-200 mt-2">Join our Discord and open a support ticket with this ID so we can start your order.</div>
       <a href="${discordUrl}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 mt-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold">Join Discord →</a>`;
+
     banner.classList.remove("hidden");
+
+    // Copy button wiring
+    setTimeout(() => {
+      const btn = document.getElementById("copyOrderBtn");
+      btn?.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(order);
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = "Copy"), 1200);
+        } catch {
+          btn.textContent = "Failed";
+          setTimeout(() => (btn.textContent = "Copy"), 1200);
+        }
+      });
+    }, 0);
   } else if (params.get("canceled") === "1") {
     banner.className =
       "mb-6 rounded-2xl border border-rose-700 bg-rose-900/30 px-4 py-3";
@@ -86,7 +83,6 @@ function initCountups() {
   const statEls = Array.from(document.querySelectorAll("[data-countup='1']"));
   if (!statEls.length) return;
 
-  // If IntersectionObserver isn't supported, just run immediately.
   if (!("IntersectionObserver" in window)) {
     statEls.forEach((el) => {
       const to = parseFloat(el.getAttribute("data-to") || "0");
@@ -108,7 +104,7 @@ function initCountups() {
         const suffix = el.getAttribute("data-suffix") || "";
         animateCount(el, to, decimals, suffix, 900);
 
-        obs.unobserve(el); // run once
+        obs.unobserve(el);
       }
     },
     { threshold: 0.6 }
@@ -116,9 +112,9 @@ function initCountups() {
 
   statEls.forEach((el) => observer.observe(el));
 }
+
 // ================= Game Config =================
 const GAME_KEY = "rivals";
-
 
 // Tiers with divisions 3/2/1
 const DIVISION_TIERS = [
@@ -136,9 +132,7 @@ const SINGLE_RANKS = ["Eternity", "OOA"];
 
 function buildRanks() {
   const out = [];
-  for (const tier of DIVISION_TIERS) {
-    out.push(`${tier} 3`, `${tier} 2`, `${tier} 1`);
-  }
+  for (const tier of DIVISION_TIERS) out.push(`${tier} 3`, `${tier} 2`, `${tier} 1`);
   for (const r of SINGLE_RANKS) out.push(r);
   return out;
 }
@@ -151,7 +145,7 @@ function stepsUp(fromRank, toRank) {
   const i = idx(fromRank);
   const j = idx(toRank);
   if (i < 0 || j < 0) return 0;
-  return j - i; // must be > 0
+  return j - i;
 }
 
 function buildPackageValue(fromRank, toRank) {
@@ -177,12 +171,32 @@ function getAddOns() {
   };
 }
 
+// ================= Sticky Summary helpers =================
+function addonsLabel(addons) {
+  const out = [];
+  if (addons.priority) out.push("Priority");
+  if (addons.specificHero) out.push("Specific Hero");
+  if (addons.lowRR) out.push("Low RR");
+  return out.length ? out.join(", ") : "None";
+}
+
+function updateSidebarSummary({ fromRank, toRank, totalText }) {
+  const pkgEl = document.getElementById("summaryPackage");
+  const addonsEl = document.getElementById("summaryAddons");
+  const totalEl = document.getElementById("summaryTotal");
+  if (!pkgEl || !addonsEl || !totalEl) return;
+
+  const addons = getAddOns();
+  pkgEl.textContent = fromRank && toRank ? `${fromRank} → ${toRank}` : "—";
+  addonsEl.textContent = addonsLabel(addons);
+  totalEl.textContent = totalText || "$0.00";
+}
+
 // ================= Rank dropdown populate =================
 function populateRankFrom() {
   const from = document.getElementById("rankFrom");
   if (!from) return;
 
-  // prevent double-fill
   if (from.querySelectorAll("option").length > 1) return;
 
   for (const r of RANKS) {
@@ -214,16 +228,12 @@ function populateRankToFiltered() {
     to.appendChild(opt);
   }
 
-  // restore if still valid
-  if (prevTo && idx(prevTo) > fromIndex) {
-    to.value = prevTo;
-  }
+  if (prevTo && idx(prevTo) > fromIndex) to.value = prevTo;
 }
 
 // ================= Rank icons (main tier only) =================
 function getMainTier(rank) {
   if (!rank) return "placeholder";
-  // main tier only, ignores 1/2/3
   return rank.split(" ")[0].toLowerCase();
 }
 
@@ -265,6 +275,7 @@ async function updatePreview() {
     totalEl.textContent = "$0.00";
     hiddenPkg.value = "";
     summaryEl.textContent = "Choose ranks above.";
+    updateSidebarSummary({ fromRank: "", toRank: "", totalText: "$0.00" });
     return;
   }
 
@@ -272,6 +283,7 @@ async function updatePreview() {
     totalEl.textContent = "$0.00";
     hiddenPkg.value = "";
     summaryEl.textContent = "Desired rank must be higher than current rank.";
+    updateSidebarSummary({ fromRank, toRank, totalText: "$0.00" });
     return;
   }
 
@@ -281,7 +293,6 @@ async function updatePreview() {
   const divisionPointsRaw = document.getElementById("divisionPoints")?.value ?? "";
   const divisionPoints = divisionPointsRaw === "" ? null : Number(divisionPointsRaw);
 
-  // If user types something invalid, just treat as null for preview
   const safeDivisionPoints = Number.isFinite(divisionPoints) && divisionPoints >= 0 ? divisionPoints : null;
 
   const pkg = buildPackageValue(fromRank, toRank);
@@ -290,8 +301,8 @@ async function updatePreview() {
   // UI while loading
   totalEl.textContent = "…";
   summaryEl.textContent = `${buildPackageLabel(fromRank, toRank)} (preview)`;
+  updateSidebarSummary({ fromRank, toRank, totalText: "…" });
 
-  // Cancel previous request if user changes fast
   if (previewAbort) previewAbort.abort();
   previewAbort = new AbortController();
 
@@ -316,10 +327,12 @@ async function updatePreview() {
     if (!res.ok) throw new Error(data?.error || "Preview failed");
 
     totalEl.textContent = `$${data.amount}`;
+    updateSidebarSummary({ fromRank, toRank, totalText: `$${data.amount}` });
   } catch (e) {
     if (e.name === "AbortError") return;
     totalEl.textContent = "$0.00";
     summaryEl.textContent = `Preview error: ${e.message}`;
+    updateSidebarSummary({ fromRank, toRank, totalText: "$0.00" });
   }
 }
 
@@ -327,7 +340,7 @@ async function updatePreview() {
 function init() {
   showBanner();
   initCountups();
-  
+
   populateRankFrom();
   populateRankToFiltered();
 
@@ -355,12 +368,10 @@ function init() {
     });
   });
 
-  // Division points affects metadata (not price), but we can still refresh preview for consistency
   document.getElementById("divisionPoints")?.addEventListener("input", () => {
     updatePreview();
   });
 
-  // Hero name input affects validation if Specific Hero is on
   document.getElementById("heroName")?.addEventListener("input", () => {
     updatePreview();
   });
@@ -388,7 +399,6 @@ function init() {
       const rankTo = document.getElementById("rankTo")?.value || "";
       const pkg = document.getElementById("package")?.value || "";
 
-      // Optional division points (only under current)
       const divisionPointsRaw = document.getElementById("divisionPoints")?.value ?? "";
       const divisionPoints = divisionPointsRaw === "" ? null : Number(divisionPointsRaw);
       if (divisionPoints !== null && (!Number.isFinite(divisionPoints) || divisionPoints < 0)) {
@@ -443,7 +453,6 @@ function init() {
   });
 }
 
-// Run after DOM is ready so listeners always attach
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", init);
 } else {

@@ -35,10 +35,10 @@
                 <img
                   src="/assets/logo.png"
                   alt="TopDog Boosting"
-                  class="h-20 w-20 object-contain"
+                  class="h-12 w-12 object-contain"
                 />
                 <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">
-                  TopDog  Boosting <span class="text-indigo-400">Rivals</span>
+                  TopDog Boosting <span class="text-indigo-400">Rivals</span>
                 </h1>
               </a>
 
@@ -47,8 +47,8 @@
               </p>
             </div>
 
-            <div class="flex items-center gap-3">
-              <!-- Discord icon -->
+            <div class="flex flex-wrap items-center gap-3">
+              <!-- Open Ticket (FIXED: properly closed) -->
               <a
                 href="https://discord.gg/rF5d89mQRq"
                 target="_blank"
@@ -56,9 +56,6 @@
                 class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-2 text-sm font-semibold"
               >
                 Open Ticket
-              </a>
-
-                
               </a>
 
               <span class="inline-flex items-center gap-2 rounded-full border border-emerald-700/50 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-200">
@@ -180,7 +177,6 @@
                 <!-- Current rank card -->
                 <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
                   <div class="flex items-center gap-4">
-                    <!-- BIG icon -->
                     <div class="h-28 w-28 shrink-0 rounded-2xl border border-slate-800 bg-slate-950 flex items-center justify-center">
                       <img
                         id="rankFromImg"
@@ -198,12 +194,10 @@
                         class="w-full appearance-none rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 text-base font-semibold tracking-wide text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       >
                         <option value="" disabled selected>Select current rank</option>
-                        <!-- JS fills -->
                       </select>
                     </div>
                   </div>
 
-                  <!-- Current division points -->
                   <div class="mt-4">
                     <label class="block text-sm font-semibold mb-2">Current division points</label>
                     <input
@@ -223,7 +217,6 @@
                 <!-- Desired rank card -->
                 <div class="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
                   <div class="flex items-center gap-4">
-                    <!-- BIG icon -->
                     <div class="h-28 w-28 shrink-0 rounded-2xl border border-slate-800 bg-slate-950 flex items-center justify-center">
                       <img
                         id="rankToImg"
@@ -241,12 +234,10 @@
                         class="w-full appearance-none rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 text-base font-semibold tracking-wide text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       >
                         <option value="" disabled selected>Select desired rank</option>
-                        <!-- JS fills -->
                       </select>
                     </div>
                   </div>
 
-                  <!-- Spacer -->
                   <div class="mt-4 rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
                     <p class="text-sm font-semibold">Tip</p>
                     <p class="text-xs text-slate-400 mt-1">Pick a goal rank higher than your current rank.</p>
@@ -306,6 +297,34 @@
                 <p id="packageSummary" class="text-sm text-slate-300"></p>
               </div>
 
+              <!-- Promo code (separate block, cleaner) -->
+              <div class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 space-y-2">
+                <p class="text-sm font-semibold">Promo code</p>
+
+                <div class="flex gap-2">
+                  <input
+                    id="promoCode"
+                    placeholder="ex: SAVE10"
+                    class="w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    id="applyPromoBtn"
+                    type="button"
+                    class="shrink-0 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-800 transition px-4 py-3 text-sm font-semibold"
+                  >
+                    Apply
+                  </button>
+                </div>
+
+                <p id="promoMsg" class="text-xs text-slate-400"></p>
+
+                <div id="promoBreakdown" class="hidden text-xs text-slate-300 space-y-1">
+                  <div class="flex justify-between"><span>Base</span><span id="promoBase">$0.00</span></div>
+                  <div class="flex justify-between"><span>Discount</span><span id="promoDiscount">-$0.00</span></div>
+                  <div class="flex justify-between font-semibold"><span>Total</span><span id="promoTotal">$0.00</span></div>
+                </div>
+              </div>
+
               <button
                 id="payBtn"
                 type="submit"
@@ -327,7 +346,33 @@
           </main>
 
           <!-- Side trust / perks -->
-          <aside class="space-y-6">
+          <aside class="space-y-6 lg:sticky lg:top-6 self-start">
+            <!-- Sticky Order Summary -->
+            <div class=" top-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 shadow-lg">
+              <p class="text-sm font-semibold">Order Summary</p>
+
+              <div class="mt-4 space-y-2 text-sm text-slate-300">
+                <div class="flex justify-between gap-4">
+                  <span class="shrink-0">Package</span>
+                  <span id="summaryPackage" class="font-semibold text-slate-100 text-right">—</span>
+                </div>
+
+                <div class="flex justify-between gap-4">
+                  <span class="shrink-0">Add-ons</span>
+                  <span id="summaryAddons" class="text-slate-200 text-right">—</span>
+                </div>
+
+                <div class="pt-3 mt-3 border-t border-slate-800 flex items-center justify-between">
+                  <span class="text-slate-300 font-semibold">Total</span>
+                  <span id="summaryTotal" class="text-xl font-extrabold">$0.00</span>
+                </div>
+
+                <p class="text-xs text-slate-400 mt-2">
+                  Final total is confirmed securely on Stripe checkout.
+                </p>
+              </div>
+            </div>
+
             <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
               <p class="text-sm font-semibold">Security & Privacy</p>
               <ul class="mt-4 space-y-2 text-sm text-slate-300">
@@ -374,15 +419,12 @@
           </aside>
         </div>
 
-        <!-- Footer -->
+        <!-- Footer (unchanged from your file) -->
         <footer class="mt-10 text-xs text-slate-500">
           <div class="rounded-2xl border border-slate-800 bg-slate-900/30 p-5">
-            <!-- UPDATED: What happens next (instead of repeating top stats) -->
             <div class="grid gap-6 md:grid-cols-3 text-center">
-              <!-- 1) Stripe receipt -->
               <div>
                 <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/15 border border-indigo-700/40">
-                  <!-- Receipt icon -->
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M9 14h6m-6-4h6m-7 11l-2 1V3l2 1 2-1 2 1 2-1 2 1 2-1v18l-2-1-2 1-2-1-2 1-2-1-2 1z" />
@@ -392,10 +434,8 @@
                 <p class="mt-2 text-slate-400 text-sm">You’ll get a confirmation Ticket ID after payment.</p>
               </div>
 
-              <!-- 2) Open Discord ticket with ID -->
               <div>
                 <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 border border-emerald-700/40">
-                  <!-- Ticket icon -->
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M9 4h6a2 2 0 012 2v2a2 2 0 110 4v2a2 2 0 01-2 2H9a2 2 0 01-2-2v-2a2 2 0 110-4V6a2 2 0 012-2z" />
@@ -405,10 +445,8 @@
                 <p class="mt-2 text-slate-400 text-sm">Paste your Ticket ID so we can confirm + start your order.</p>
               </div>
 
-              <!-- 3) Experienced boosters only -->
               <div>
                 <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/15 border border-sky-700/40">
-                  <!-- Badge/check icon -->
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M9 12l2 2 4-4m7 2a9 9 0 11-18 0 9 9 0 0118 0z" />
